@@ -163,11 +163,11 @@
 }
 
 /* -------------------------------------
-   RED NOIR STYLES (Landing Page) 
+   LIGHT BLUE STYLES (Landing Page) 
 -------------------------------------- */
 :root {
-  --accent-red: #ef233c;
-  --accent-red-glow: rgba(239, 35, 60, 0.5);
+  --accent-blue: #2563eb;
+  --accent-blue-glow: rgba(37, 99, 235, 0.5);
 }
 
 @property --gradient-angle { 
@@ -188,8 +188,8 @@
     overflow: hidden;
     border-radius: 9999px;
     padding: 1rem 2.5rem;
-    background: linear-gradient(#000000, #000000) padding-box,
-    conic-gradient(from var(--gradient-angle), transparent 0%, #ef233c 5%, #ef233c 15%, #ef233c 30%, transparent 40%, transparent 100%) border-box;
+    background: linear-gradient(#ffffff, #ffffff) padding-box,
+    conic-gradient(from var(--gradient-angle), transparent 0%, #2563eb 5%, #2563eb 15%, #2563eb 30%, transparent 40%, transparent 100%) border-box;
     border: 2px solid transparent;
     cursor: pointer;
     isolation: isolate;
@@ -207,8 +207,8 @@
   }
 
   /* Parallax Stars */
-  .stars-1 { box-shadow: 234px 124px #fff, 654px 345px #fff, 876px 12px #fff, 1200px 800px #fff, 400px 1500px #fff, 1800px 200px #fff, 100px 1000px #fff, 900px 1900px #fff, 500px 600px #fff, 1400px 100px #fff, 300px 400px #fff, 1600px 1200px #fff; }
-  .stars-2 { box-shadow: 123px 456px #fff, 789px 234px #fff, 456px 890px #fff, 1100px 300px #fff, 200px 1200px #fff, 1500px 500px #fff, 600px 1700px #fff, 1300px 900px #fff; }
+  .stars-1 { box-shadow: 234px 124px #e5e7eb, 654px 345px #e5e7eb, 876px 12px #e5e7eb, 1200px 800px #e5e7eb, 400px 1500px #e5e7eb, 1800px 200px #e5e7eb, 100px 1000px #e5e7eb, 900px 1900px #e5e7eb, 500px 600px #e5e7eb, 1400px 100px #e5e7eb, 300px 400px #e5e7eb, 1600px 1200px #e5e7eb; }
+  .stars-2 { box-shadow: 123px 456px #e5e7eb, 789px 234px #e5e7eb, 456px 890px #e5e7eb, 1100px 300px #e5e7eb, 200px 1200px #e5e7eb, 1500px 500px #e5e7eb, 600px 1700px #e5e7eb, 1300px 900px #e5e7eb; }
 
   .gradient-blur {
     position: fixed;
@@ -216,18 +216,18 @@
     inset: 0 0 auto 0;
     height: 120px;
     pointer-events: none;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
     backdrop-filter: blur(8px);
     mask-image: linear-gradient(to bottom, black, transparent);
   }
 
-  .selection-red::selection {
-    background: #ef233c;
+  .selection-blue::selection {
+    background: #2563eb;
     color: white;
   }
 
   .text-stroke {
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+    -webkit-text-stroke: 1px rgba(0, 0, 0, 0.1);
     color: transparent;
   }
 }
