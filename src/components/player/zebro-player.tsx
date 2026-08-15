@@ -31,6 +31,7 @@ export function ZebroPlayer({
   allowSeek?: boolean
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [progress, setProgress] = useState(0);
@@ -125,11 +126,11 @@ export function ZebroPlayer({
   };
 
   const toggleFullscreen = () => {
-    if (videoRef.current) {
+    if (containerRef.current) {
       if (document.fullscreenElement) {
         document.exitFullscreen();
       } else {
-        videoRef.current.requestFullscreen();
+        containerRef.current.requestFullscreen();
       }
     }
   };
@@ -145,7 +146,7 @@ export function ZebroPlayer({
   };
 
   return (
-    <div className="relative group bg-black rounded-lg overflow-hidden flex items-center justify-center aspect-video">
+    <div ref={containerRef} className="relative group bg-black rounded-lg overflow-hidden flex items-center justify-center aspect-video">
       {videoError ? (
         <div className="text-white text-sm bg-red-500/20 p-4 rounded-lg flex flex-col items-center">
           <AlertCircle className="h-8 w-8 text-red-500 mb-2" />
