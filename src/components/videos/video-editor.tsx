@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { ZebroPlayer } from "@/components/player/zebro-player";
 import { Switch } from "@/components/ui/switch";
-import { Copy, Link as LinkIcon, Code, Eye, Lock, Globe, Share2, Trash2 } from "lucide-react";
+import { Copy, Link as LinkIcon, Code, Eye, Lock, Globe, Share2, Trash2, Image as ImageIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -31,7 +31,9 @@ export function VideoEditor({ video }: { video: any }) {
     title: video.title || "",
     description: video.description || "",
     privacy: video.privacy || "PRIVATE",
+    thumbnail_url: video.thumbnail_url || "",
   });
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
 
   const [embedSettings, setEmbedSettings] = useState({
     responsive: true,
@@ -53,6 +55,7 @@ export function VideoEditor({ video }: { video: any }) {
         title: formData.title,
         description: formData.description,
         privacy: formData.privacy,
+        thumbnail_url: formData.thumbnail_url,
       })
       .eq("id", video.id);
 
@@ -80,6 +83,29 @@ export function VideoEditor({ video }: { video: any }) {
       toast.error("Erro ao excluir vídeo.");
       setIsDeleting(false);
     }
+  };
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingThumbnail(true);
+    const fileExt = file.name.split('.').pop();
+    const filePath = `thumbnails/${video.workspace_id}/${video.id}-${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("videos_bucket")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      toast.error("Erro ao fazer upload da capa.");
+      setUploadingThumbnail(false);
+      return;
+    }
+
+    setFormData({ ...formData, thumbnail_url: filePath });
+    toast.success("Capa enviada! Clique em 'Salvar Alterações' para confirmar.");
+    setUploadingThumbnail(false);
   };
 
   const copyToClipboard = (text: string) => {
@@ -130,6 +156,7 @@ export function VideoEditor({ video }: { video: any }) {
               videoPath={video.file_path} 
               videoId={video.id}
               workspaceId={video.workspace_id}
+              thumbnailPath={formData.thumbnail_url}
             />
           ) : (
             <div className="aspect-video flex flex-col items-center justify-center bg-muted">
@@ -165,6 +192,27 @@ export function VideoEditor({ video }: { video: any }) {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Adicione uma descrição detalhada para o seu vídeo..."
               />
+            </div>
+
+            <div className="space-y-2 pt-2 border-t mt-4">
+              <Label className="font-semibold flex items-center gap-2">
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                Capa do Vídeo (Thumbnail)
+              </Label>
+              <div className="flex items-center gap-4 mt-2">
+                <Input 
+                  type="file" 
+                  accept="image/*" 
+                  className="max-w-[250px]" 
+                  onChange={handleThumbnailUpload}
+                  disabled={uploadingThumbnail}
+                />
+                {uploadingThumbnail && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
+                {formData.thumbnail_url && !uploadingThumbnail && (
+                  <span className="text-xs text-green-500 font-semibold bg-green-500/10 px-2 py-1 rounded">Capa anexada</span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">Recomendado: 1280x720px (JPG ou PNG). Você precisa salvar as alterações após o envio.</p>
             </div>
           </div>
 

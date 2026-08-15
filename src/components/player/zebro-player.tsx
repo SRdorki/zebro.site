@@ -20,7 +20,8 @@ export function ZebroPlayer({
   autoplay = false,
   muted = false,
   loop = false,
-  allowSeek = true
+  allowSeek = true,
+  thumbnailPath
 }: { 
   videoPath: string, 
   videoId: string, 
@@ -28,7 +29,8 @@ export function ZebroPlayer({
   autoplay?: boolean,
   muted?: boolean,
   loop?: boolean,
-  allowSeek?: boolean
+  allowSeek?: boolean,
+  thumbnailPath?: string | null
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,6 +39,7 @@ export function ZebroPlayer({
   const [progress, setProgress] = useState(0);
   const [isMuted, setIsMuted] = useState(muted);
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [posterUrl, setPosterUrl] = useState<string | undefined>(undefined);
   const [videoError, setVideoError] = useState<string | null>(null);
   const supabase = createClient();
 
@@ -52,6 +55,15 @@ export function ZebroPlayer({
       } else {
         setVideoError("Erro ao acessar o vídeo (URL expirada ou arquivo não encontrado).");
         console.error("Erro ao gerar URL do vídeo:", error);
+      }
+
+      if (thumbnailPath) {
+        const { data: posterData } = await supabase.storage
+          .from("videos_bucket")
+          .createSignedUrl(thumbnailPath, 60 * 60);
+        if (posterData) {
+          setPosterUrl(posterData.signedUrl);
+        }
       }
     };
     fetchSignedUrl();
@@ -168,6 +180,7 @@ export function ZebroPlayer({
           autoPlay={autoplay}
           muted={isMuted}
           loop={loop}
+          poster={posterUrl}
           controlsList="nodownload"
           onContextMenu={(e) => e.preventDefault()}
         />

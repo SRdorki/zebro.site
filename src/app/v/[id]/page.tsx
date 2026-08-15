@@ -63,6 +63,7 @@ export default async function PublicVideoPage({ params }: { params: Promise<{ id
             videoPath={video.file_path} 
             videoId={video.id}
             workspaceId={video.workspace_id}
+            thumbnailPath={video.thumbnail_url}
           />
         </div>
 

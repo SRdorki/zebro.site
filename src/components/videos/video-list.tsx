@@ -31,6 +31,7 @@ export function VideoList() {
   const { activeWorkspace } = useWorkspace();
   const supabase = createClient();
   const [videos, setVideos] = useState<Video[]>([]);
+  const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"list" | "grid">("list");
@@ -52,7 +53,32 @@ export function VideoList() {
 
       const { data, error } = await query;
       if (!error && data) {
-        setVideos(data as Video[]);
+        const vids = data as Video[];
+        setVideos(vids);
+        
+        // Fetch signed URLs for thumbnails in bulk
+        const thumbnailPaths = vids
+          .filter(v => v.thumbnail_url)
+          .map(v => v.thumbnail_url as string);
+          
+        if (thumbnailPaths.length > 0) {
+          const { data: signedUrlsData } = await supabase.storage
+            .from("videos_bucket")
+            .createSignedUrls(thumbnailPaths, 60 * 60);
+            
+          if (signedUrlsData) {
+            const thumbMap: Record<string, string> = {};
+            vids.forEach(v => {
+              if (v.thumbnail_url) {
+                const matched = signedUrlsData.find(su => su.path === v.thumbnail_url);
+                if (matched && matched.signedUrl) {
+                  thumbMap[v.id] = matched.signedUrl;
+                }
+              }
+            });
+            setThumbnails(thumbMap);
+          }
+        }
       }
       setLoading(false);
     };
@@ -168,8 +194,12 @@ export function VideoList() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {videos.map((video) => (
             <div key={video.id} className="border rounded-lg bg-card overflow-hidden flex flex-col group">
-              <div className="aspect-video bg-muted relative flex items-center justify-center">
-                <span className="text-xs text-muted-foreground">Sem Thumbnail</span>
+              <div className="aspect-video bg-muted relative flex items-center justify-center overflow-hidden">
+                {thumbnails[video.id] ? (
+                  <img src={thumbnails[video.id]} alt={video.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                ) : (
+                  <span className="text-xs text-muted-foreground">Sem Thumbnail</span>
+                )}
               </div>
               <div className="p-4 flex flex-col flex-1">
                 <Link href={`/dashboard/videos/${video.id}`} className="font-semibold line-clamp-1 group-hover:underline">

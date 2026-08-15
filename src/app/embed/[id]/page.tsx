@@ -48,6 +48,7 @@ export default async function EmbedVideoPage({
         muted={isMuted}
         loop={isLoop}
         allowSeek={allowSeek}
+        thumbnailPath={video.thumbnail_url}
       />
     </div>
   );
