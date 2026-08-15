@@ -167,6 +167,8 @@ export function ZebroPlayer({
           autoPlay={autoplay}
           muted={isMuted}
           loop={loop}
+          controlsList="nodownload"
+          onContextMenu={(e) => e.preventDefault()}
         />
       )}
       
