@@ -3,7 +3,6 @@ import { Outfit, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { Adsense } from "@/components/adsense";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -27,8 +26,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        <meta name="google-adsense-account" content="ca-pub-5878813660941262" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5878813660941262"
+          crossOrigin="anonymous"
+        ></script>
+      </head>
       <body className={`${outfit.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-background text-foreground`} suppressHydrationWarning>
-        <Adsense />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
