@@ -18,14 +18,23 @@ export function AdBanner() {
     }
   }, []);
 
+  // Em ambiente de desenvolvimento, renderizamos um placeholder escuro para não ficar um buraco branco
+  if (process.env.NODE_ENV === "development") {
+    return (
+      <div className="w-full max-w-4xl mx-auto my-8 h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center">
+        <span className="text-white/40 text-sm font-medium">Área de Anúncio AdSense (Bloqueado no Localhost)</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full max-w-4xl mx-auto overflow-hidden text-center my-8">
+    <div className="w-full max-w-4xl mx-auto overflow-hidden text-center my-8 min-h-[100px]">
       <ins
         ref={adRef}
         className="adsbygoogle"
         style={{ display: "block" }}
         data-ad-client="ca-pub-5878813660941262"
-        data-ad-slot="auto" // Como não foi fornecido um ID de bloco específico, o Google cuidará caso seja AutoAds
+        data-ad-slot="auto"
         data-ad-format="auto"
         data-full-width-responsive="true"
       />

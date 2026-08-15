@@ -124,6 +124,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Ocultar anúncios não preenchidos para evitar espaços em branco */
+  ins.adsbygoogle[data-ad-status="unfilled"] {
+    display: none !important;
+  }
+  
   html {
     @apply font-sans;
   }
