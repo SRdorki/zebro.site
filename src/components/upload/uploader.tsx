@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { fetchFile, toBlobURL } from "@ffmpeg/util";
+import { AdBanner } from "@/components/ad-banner";
 
 type UploadStatus = "QUEUED" | "TRANSCODING" | "UPLOADING" | "PROCESSING" | "READY" | "FAILED";
 
@@ -303,6 +304,13 @@ export function Uploader() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Anúncio AdSense para o plano gratuito */}
+      {activeWorkspace?.plan === 'free' && (
+        <div className="pt-8">
+          <AdBanner />
         </div>
       )}
     </div>

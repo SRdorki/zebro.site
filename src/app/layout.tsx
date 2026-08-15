@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Outfit, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-
 import { Toaster } from "@/components/ui/sonner";
+import { Adsense } from "@/components/adsense";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -28,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${outfit.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-background text-foreground`} suppressHydrationWarning>
+        <Adsense />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
