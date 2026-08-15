@@ -63,9 +63,9 @@ export default function Home() {
             <h1 className="text-6xl md:text-8xl font-semibold tracking-tighter leading-[1.1] mb-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-500">Streaming Ultra-Rápido</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-500">
-                    para o <span className="text-[#2563eb] inline-block relative font-serif italic" style={{ fontFamily: "var(--font-instrument-serif), serif" }}>
+                    para o <span className="text-[#2563eb] tracking-widest inline-block relative font-serif italic" style={{ fontFamily: "var(--font-instrument-serif), serif" }}>
                         Futuro
-                        <svg className="absolute w-full h-3 -bottom-2 left-0 text-[#2563eb] opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
+                        <svg className="absolute w-full h-3 -bottom-2 left-0 text-[#2563eb] tracking-widest opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
                             <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
                         </svg>
                     </span>
@@ -115,7 +115,7 @@ export default function Home() {
                 <div className="mb-20 text-center max-w-3xl mx-auto animate-fade-up">
                     <h2 className="text-4xl md:text-5xl font-semibold text-zinc-900 tracking-tight mb-6">
                         O Sistema Operacional para <br />
-                        <span className="text-[#2563eb] font-serif italic" style={{ fontFamily: "var(--font-instrument-serif), serif" }}>Produtores de Conteúdo</span>
+                        <span className="text-[#2563eb] tracking-widest font-serif italic" style={{ fontFamily: "var(--font-instrument-serif), serif" }}>Produtores de Conteúdo</span>
                     </h2>
                     <p className="text-lg text-zinc-600 font-light">
                         Substitua dezenas de ferramentas lentas por uma única plataforma de alta performance.
@@ -126,14 +126,14 @@ export default function Home() {
                     {/* Main Feature Card */}
                     <div className="lg:col-span-2 lg:row-span-2 group relative overflow-hidden p-8 border border-black/10 bg-gradient-to-b from-zinc-100/50 to-white hover:border-black/20 transition-all rounded-xl">
                         <div className="relative z-10 h-full flex flex-col">
-                            <div className="mb-6 inline-flex p-3 rounded-lg bg-white/5 border border-black/10 text-[#2563eb]">
+                            <div className="mb-6 inline-flex p-3 rounded-lg bg-white/5 border border-black/10 text-[#2563eb] tracking-widest">
                                 <Cloud className="w-6 h-6" />
                             </div>
                             <h3 className="text-3xl font-semibold text-zinc-900 mb-4 tracking-tight">CDN Global Inteligente</h3>
                             <p className="text-zinc-600 text-lg leading-relaxed">Nossa infraestrutura distribui seus vídeos globalmente através de edge nodes espalhados pelo mundo. Carregamento quase instantâneo e zero buffering em 4K para a melhor experiência do seu usuário.</p>
                             <div className="mt-auto flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                                <span className="text-xs font-mono text-[#2563eb]">EXPLORAR INFRA</span>
-                                <ArrowRight className="w-4 h-4 text-[#2563eb]" />
+                                <span className="text-xs font-mono text-[#2563eb] tracking-widest">EXPLORAR INFRA</span>
+                                <ArrowRight className="w-4 h-4 text-[#2563eb] tracking-widest" />
                             </div>
                         </div>
                         <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none" style={{ background: 'radial-gradient(circle at top right, #2563eb, transparent 70%)' }}></div>
@@ -220,9 +220,9 @@ export default function Home() {
                             <span className="text-zinc-500 text-sm">/mês</span>
                         </div>
                         <ul className="space-y-4 mb-8 flex-1">
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> Retenção por 14 Dias</li>
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> 5 GB de Armazenamento</li>
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> Player com Anúncios</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> Retenção por 14 Dias</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> 5 GB de Armazenamento</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> Player com Anúncios</li>
                         </ul>
                         <Link href="/register">
                           <button className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 text-zinc-900 border border-black/10 rounded-lg text-sm font-bold uppercase tracking-wider transition-all">Começar</button>
@@ -240,10 +240,10 @@ export default function Home() {
                             <span className="text-zinc-500 text-sm">/mês</span>
                         </div>
                         <ul className="space-y-4 mb-8 flex-1">
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> Retenção Ilimitada</li>
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> 100 GB Armazenamento</li>
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> 500 GB Bandwidth</li>
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> Player Limpo (Sem Ads)</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> Retenção Ilimitada</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> 100 GB Armazenamento</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> 500 GB Bandwidth</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> Player Limpo (Sem Ads)</li>
                         </ul>
                         <Link href="/register">
                           <button className="w-full py-3 px-4 bg-[#2563eb] hover:bg-blue-700 text-zinc-900 rounded-lg text-sm font-bold uppercase tracking-wider transition-all">Assinar Essencial</button>
@@ -260,9 +260,9 @@ export default function Home() {
                             <span className="text-zinc-500 text-sm">/mês</span>
                         </div>
                         <ul className="space-y-4 mb-8 flex-1">
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> Armazenamento Infinito</li>
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> Bandwidth Ilimitado</li>
-                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] w-5 h-5" /> Suporte Prioritário</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> Armazenamento Infinito</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> Bandwidth Ilimitado</li>
+                            <li className="flex items-center gap-3 text-sm text-zinc-700"><Check className="text-[#2563eb] tracking-widest w-5 h-5" /> Suporte Prioritário</li>
                         </ul>
                         <Link href="/register">
                           <button className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 text-zinc-900 border border-black/10 rounded-lg text-sm font-bold uppercase tracking-wider transition-all">Assinar Pro</button>
@@ -275,7 +275,7 @@ export default function Home() {
         {/* CTA Waitlist */}
         <section className="py-32 px-6 text-center bg-zinc-50/40">
             <div className="max-w-3xl mx-auto">
-                <h2 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter">Pronto para <span className="text-[#2563eb] font-serif italic" style={{ fontFamily: "var(--font-instrument-serif), serif" }}>Construir?</span></h2>
+                <h2 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter">Pronto para <span className="text-[#2563eb] tracking-widest font-serif italic" style={{ fontFamily: "var(--font-instrument-serif), serif" }}>Construir?</span></h2>
                 <p className="text-xl text-zinc-600 mb-12">Crie sua conta agora mesmo e teste nossos recursos gratuitamente.</p>
                 
                 <div className="max-w-md mx-auto">
@@ -301,7 +301,7 @@ export default function Home() {
               </div>
               
               <div>
-                  <h4 className="text-xs font-bold text-[#2563eb] uppercase tracking-widest mb-6">Plataforma</h4>
+                  <h4 className="text-xs font-bold text-[#2563eb] tracking-widest uppercase tracking-widest mb-6">Plataforma</h4>
                   <ul className="space-y-4 text-zinc-600 text-sm">
                       <li><Link href="#features" className="hover:text-zinc-900 transition-colors">Features</Link></li>
                       <li><Link href="#pricing" className="hover:text-zinc-900 transition-colors">Pricing</Link></li>
@@ -310,7 +310,7 @@ export default function Home() {
               </div>
               
               <div>
-                  <h4 className="text-xs font-bold text-[#2563eb] uppercase tracking-widest mb-6">Empresa</h4>
+                  <h4 className="text-xs font-bold text-[#2563eb] tracking-widest uppercase tracking-widest mb-6">Empresa</h4>
                   <ul className="space-y-4 text-zinc-600 text-sm">
                       <li><Link href="#" className="hover:text-zinc-900 transition-colors">About</Link></li>
                       <li><Link href="#" className="hover:text-zinc-900 transition-colors">Terms of Service</Link></li>
