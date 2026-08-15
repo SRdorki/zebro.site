@@ -63,7 +63,7 @@ export default function Home() {
             <h1 className="text-6xl md:text-8xl font-semibold tracking-tighter leading-[1.1] mb-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-500">Streaming Ultra-Rápido</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-500">
-                    para o <span className="text-[#2563eb] inline-block relative">
+                    para o <span className="text-[#2563eb] inline-block relative font-serif italic" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
                         Futuro
                         <svg className="absolute w-full h-3 -bottom-2 left-0 text-[#2563eb] opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
                             <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
@@ -115,7 +115,7 @@ export default function Home() {
                 <div className="mb-20 text-center max-w-3xl mx-auto animate-fade-up">
                     <h2 className="text-4xl md:text-5xl font-semibold text-zinc-900 tracking-tight mb-6">
                         O Sistema Operacional para <br />
-                        <span className="text-[#2563eb]">Produtores de Conteúdo</span>
+                        <span className="text-[#2563eb] font-serif italic" style={{ fontFamily: "'Times New Roman', Times, serif" }}>Produtores de Conteúdo</span>
                     </h2>
                     <p className="text-lg text-zinc-600 font-light">
                         Substitua dezenas de ferramentas lentas por uma única plataforma de alta performance.
@@ -275,7 +275,7 @@ export default function Home() {
         {/* CTA Waitlist */}
         <section className="py-32 px-6 text-center bg-zinc-50/40">
             <div className="max-w-3xl mx-auto">
-                <h2 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter">Pronto para <span className="text-[#2563eb]">Construir?</span></h2>
+                <h2 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter">Pronto para <span className="text-[#2563eb] font-serif italic" style={{ fontFamily: "'Times New Roman', Times, serif" }}>Construir?</span></h2>
                 <p className="text-xl text-zinc-600 mb-12">Crie sua conta agora mesmo e teste nossos recursos gratuitamente.</p>
                 
                 <div className="max-w-md mx-auto">
