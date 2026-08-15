@@ -212,7 +212,7 @@ export function VideoEditor({ video }: { video: any }) {
                   <span className="text-xs text-green-500 font-semibold bg-green-500/10 px-2 py-1 rounded">Capa anexada</span>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">Recomendado: 1280x720px (JPG ou PNG). Você precisa salvar as alterações após o envio.</p>
+              <p className="text-xs text-muted-foreground">Recomendado: 1920x1080px (JPG ou PNG). Você precisa salvar as alterações após o envio.</p>
             </div>
           </div>
 
