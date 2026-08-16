@@ -4,6 +4,8 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { Check } from "lucide-react";
 
+import { CheckoutButton } from "@/components/checkout-button";
+
 function formatBytes(bytes: number, decimals = 2) {
   if (!+bytes) return '0 Bytes';
   if (bytes === Infinity) return '∞';
@@ -87,10 +89,26 @@ export default async function BillingPage() {
   const bandwidthPercentage = isInfinite ? 100 : Math.min(100, (estimatedBandwidthBytes / bandwidthLimitBytes) * 100);
 
   const plans = [
-    { id: 'free', name: 'Básico', price: 'Grátis', features: ['Vídeos retidos por 14 dias', 'Com Anúncios', '5 GB Armazenamento'] },
-    { id: '97', name: 'Essencial', price: 'R$ 97', features: ['Retenção Ilimitada', 'Sem Anúncios', '100 GB Armazenamento', '500 GB Bandwidth'] },
-    { id: '197', name: 'Pro', price: 'R$ 197', features: ['Armazenamento Infinito', 'Bandwidth Ilimitado', 'Suporte Prioritário'] },
-    { id: '297', name: 'Premium', price: 'R$ 297', features: ['Armazenamento Infinito', 'Bandwidth Ilimitado', 'Acesso Administrativo', 'Suporte VIP'] },
+    { 
+      id: 'free', name: 'Básico', price: 'Grátis', numericValue: 0,
+      features: ['Vídeos retidos por 14 dias', 'Com Anúncios', '5 GB Armazenamento'],
+      paymentLink: null
+    },
+    { 
+      id: '97', name: 'Essencial', price: 'R$ 97', numericValue: 97,
+      features: ['Retenção Ilimitada', 'Sem Anúncios', '100 GB Armazenamento', '500 GB Bandwidth'],
+      paymentLink: 'https://sandbox.asaas.com/c/gync4qihvdnd7kdv'
+    },
+    { 
+      id: '197', name: 'Pro', price: 'R$ 197', numericValue: 197,
+      features: ['Armazenamento Infinito', 'Bandwidth Ilimitado', 'Suporte Prioritário'],
+      paymentLink: null
+    },
+    { 
+      id: '297', name: 'Premium', price: 'R$ 297', numericValue: 297,
+      features: ['Armazenamento Infinito', 'Bandwidth Ilimitado', 'Acesso Administrativo', 'Suporte VIP'],
+      paymentLink: null
+    },
   ];
 
   return (
@@ -167,9 +185,17 @@ export default async function BillingPage() {
                   ))}
                 </ul>
 
-                <Button className="w-full mt-8" variant={isActive ? "outline" : "default"} disabled={isActive}>
-                  {isActive ? 'Plano Atual' : 'Fazer Upgrade'}
-                </Button>
+                {isActive ? (
+                  <Button className="w-full mt-8" variant="outline" disabled>
+                    Plano Atual
+                  </Button>
+                ) : p.id === 'free' ? (
+                  <Button className="w-full mt-8" variant="outline" disabled>
+                    Grátis
+                  </Button>
+                ) : (
+                  <CheckoutButton plan={p} />
+                )}
               </div>
             );
           })}
