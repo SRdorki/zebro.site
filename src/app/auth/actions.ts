@@ -93,3 +93,21 @@ export async function resetPassword(formData: FormData) {
 
   redirect(`/auth/verify-otp?email=${encodeURIComponent(email)}`);
 }
+
+export async function updatePassword(formData: FormData) {
+  const supabase = await createClient();
+  const password = formData.get("password") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  if (password !== confirmPassword) {
+    redirect("/update-password?error=As senhas não coincidem.");
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    redirect(`/update-password?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect("/dashboard");
+}

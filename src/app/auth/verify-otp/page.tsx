@@ -104,7 +104,7 @@ function VerifyOTPForm() {
     } else {
       setSuccess(true);
       // Usually after recovery, Supabase creates a session. You can redirect to an update-password page.
-      setTimeout(() => router.push('/dashboard'), 2000);
+      setTimeout(() => router.push('/update-password'), 2000);
     }
   };
 
