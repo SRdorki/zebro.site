@@ -49,35 +49,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, message: "No payment data" });
     }
 
-    // Try to find the workspace by asaas_customer_id first
-    let workspaceId: string | null = null;
+    // Try to find the user by asaas_customer_id first
     let userId: string | null = null;
 
     if (payment.customer) {
-      const { data: ws } = await supabaseAdmin
-        .from('workspaces')
-        .select('id, owner_id')
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
         .eq('asaas_customer_id', payment.customer)
         .single();
 
-      if (ws) {
-        workspaceId = ws.id;
-        userId = ws.owner_id;
-        console.log("[Webhook] Found workspace by customer ID:", workspaceId);
+      if (profile) {
+        userId = profile.id;
+        console.log("[Webhook] Found user by customer ID:", userId);
       }
     }
 
     // Fallback: try to find by email (for payment link purchases)
-    if (!workspaceId && payment.customer) {
+    if (!userId && payment.customer) {
       // Fetch customer email from Asaas
       const ASAAS_API_KEY_BODY = process.env.ASAAS_API_KEY_BODY;
       if (ASAAS_API_KEY_BODY) {
-        const apiKey = ASAAS_API_KEY_BODY.startsWith('$') ? ASAAS_API_KEY_BODY : '$' + ASAAS_API_KEY_BODY;
-        const apiUrl = process.env.ASAAS_API_URL || 'https://api.asaas.com/v3';
+        const apiKey = '$' + ASAAS_API_KEY_BODY;
+        const apiUrl = process.env.ASAAS_API_URL || 'https://sandbox.asaas.com/api/v3';
         const customerRes = await fetch(`${apiUrl}/customers/${payment.customer}`, {
           headers: { 'access_token': apiKey }
         });
-        
         if (customerRes.ok) {
           const customerData = await customerRes.json();
           const email = customerData.email;
@@ -87,42 +84,33 @@ export async function POST(request: Request) {
             // Find user by email via auth.users
             const { data: authUser } = await supabaseAdmin.auth.admin.listUsers();
             const matchedUser = authUser?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
-            
             if (matchedUser) {
               userId = matchedUser.id;
-              
-              // Get their primary workspace
-              const { data: userWs } = await supabaseAdmin
-                .from('workspaces')
-                .select('id')
-                .eq('owner_id', userId)
-                .single();
-                
-              if (userWs) {
-                workspaceId = userWs.id;
-                console.log("[Webhook] Found workspace by email:", workspaceId);
-                
-                // Store the customer ID on the workspace for future lookups
-                await supabaseAdmin
-                  .from('workspaces')
-                  .update({ asaas_customer_id: payment.customer })
-                  .eq('id', workspaceId);
-              }
+              console.log("[Webhook] Found user by email:", userId);
+              // Store the customer ID for future lookups
+              await supabaseAdmin
+                .from('profiles')
+                .update({ asaas_customer_id: payment.customer })
+                .eq('id', userId);
             }
           }
         }
       }
     }
 
-    if (!workspaceId) {
-      console.log("[Webhook] Workspace not found for customer:", payment.customer);
-      return NextResponse.json({ success: true, message: "Workspace not found" });
+    if (!userId) {
+      console.log("[Webhook] Customer not found:", payment.customer);
+      return NextResponse.json({ success: true, message: "Customer not found" });
     }
 
     if (payload.event === 'PAYMENT_RECEIVED' || payload.event === 'PAYMENT_CONFIRMED') {
-      console.log("[Webhook] Activating subscription for workspace:", workspaceId);
-      
-      // Identify the plan
+      console.log("[Webhook] Activating subscription for user:", userId);
+      await supabaseAdmin
+        .from('profiles')
+        .update({ subscription_status: 'ACTIVE' })
+        .eq('id', userId);
+
+      // Update workspace plan based on the payment description or value
       const desc = (payment.description || '').toLowerCase();
       const val = Math.floor(payment.value || 0);
       let planId = 'free';
@@ -131,21 +119,18 @@ export async function POST(request: Request) {
       else if (desc.includes('pro') || val === 197) planId = '197';
       else if (desc.includes('premium') || val === 297) planId = '297';
       
-      const updateData: any = { subscription_status: 'ACTIVE' };
       if (planId !== 'free') {
-        updateData.plan = planId;
         console.log(`[Webhook] Upgrading workspace to plan: ${planId}`);
+        await supabaseAdmin
+          .from('workspaces')
+          .update({ plan: planId })
+          .eq('owner_id', userId);
       }
-
-      await supabaseAdmin
-        .from('workspaces')
-        .update(updateData)
-        .eq('id', workspaceId);
 
       await supabaseAdmin
         .from('billing_invoices')
         .insert({
-          workspace_id: workspaceId,
+          user_id: userId,
           asaas_payment_id: payment.id,
           amount: payment.value,
           status: 'PAID',
@@ -159,18 +144,18 @@ export async function POST(request: Request) {
 
     } else if (payload.event === 'PAYMENT_OVERDUE') {
       await supabaseAdmin
-        .from('workspaces')
+        .from('profiles')
         .update({ subscription_status: 'OVERDUE' })
-        .eq('id', workspaceId);
+        .eq('id', userId);
 
     } else if (payload.event === 'PAYMENT_REFUNDED' || payload.event === 'SUBSCRIPTION_DELETED') {
       await supabaseAdmin
-        .from('workspaces')
-        .update({ subscription_status: 'CANCELLED', plan: 'free' })
-        .eq('id', workspaceId);
+        .from('profiles')
+        .update({ subscription_status: 'CANCELLED' })
+        .eq('id', userId);
     }
 
-    console.log("[Webhook] Event", payload.event, "processed successfully for workspace:", workspaceId);
+    console.log("[Webhook] Event", payload.event, "processed successfully for user:", userId);
     return NextResponse.json({ success: true });
 
   } catch (error: any) {
