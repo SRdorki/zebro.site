@@ -23,31 +23,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid billing type" }, { status: 400 });
     }
 
-    // 1. Fetch user profile
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
+    // 1. Fetch user's primary workspace
+    const { data: workspace, error: wsError } = await supabase
+      .from("workspaces")
       .select("*")
-      .eq("id", user.id)
+      .eq("owner_id", user.id)
       .single();
 
-    if (profileError || !profile) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    if (wsError || !workspace) {
+      return NextResponse.json({ error: "Workspace not found" }, { status: 404 });
     }
 
-    let customerId = profile.asaas_customer_id;
+    let customerId = workspace.asaas_customer_id;
 
     // 2. Create Asaas customer if needed
     if (!customerId) {
+      // Get user profile for name if needed
+      const { data: profile } = await supabase.from("profiles").select("name").eq("id", user.id).single();
+      
       const newCustomer = await createAsaasCustomer({
-        name: customerName || profile.name || user.email || "Usuário",
+        name: customerName || profile?.name || user.email || "Usuário",
         email: customerEmail || user.email!,
         cpfCnpj: customerCpf || undefined,
       });
       customerId = newCustomer.id;
       await supabase
-        .from("profiles")
+        .from("workspaces")
         .update({ asaas_customer_id: customerId })
-        .eq("id", user.id);
+        .eq("id", workspace.id);
     }
 
     // 3. Create Subscription
@@ -67,14 +70,14 @@ export async function POST(request: Request) {
       description: planNames[String(planValue)] || "Zebro Assinatura",
     });
 
-    // 4. Update profile
+    // 4. Update workspace
     await supabase
-      .from("profiles")
+      .from("workspaces")
       .update({
         asaas_subscription_id: subscription.id,
         subscription_status: "PENDING",
       })
-      .eq("id", user.id);
+      .eq("id", workspace.id);
 
     // 5. For PIX: get QR code from first payment
     if (billingType === "PIX") {
