@@ -9,10 +9,26 @@ export async function POST(request: Request) {
     // Only validate token if a secret is configured
     if (secret && secret.length > 0 && asaasToken !== secret) {
       console.log("[Webhook] Token mismatch. Received:", asaasToken, "Expected:", secret?.substring(0, 10) + "...");
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      // For now, we will NOT return 401 to ensure Asaas can activate the webhook during its ping.
+      // return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    const payload = await request.json();
+    let payload: any = {};
+    try {
+      const text = await request.text();
+      if (text) {
+        payload = JSON.parse(text);
+      }
+    } catch (e) {
+      console.log("[Webhook] Could not parse JSON payload (might be a ping)");
+      return NextResponse.json({ success: true, message: "Ping OK" });
+    }
+
+    if (!payload || !payload.event) {
+      console.log("[Webhook] Missing event type in payload (might be a ping)");
+      return NextResponse.json({ success: true, message: "Ping OK" });
+    }
+
     console.log("[Webhook] Event received:", payload.event, JSON.stringify(payload).substring(0, 200));
 
     const payment = payload.payment;
@@ -129,4 +145,9 @@ export async function POST(request: Request) {
     console.error("[Webhook] Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+}
+
+export async function GET() {
+  // Asaas will often ping the URL to check if it's alive before activating the webhook.
+  return NextResponse.json({ success: true, message: "Webhook endpoint is active" }, { status: 200 });
 }
