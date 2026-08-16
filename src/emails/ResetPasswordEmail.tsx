@@ -29,19 +29,22 @@ export const ResetPasswordEmail = () => {
             </Text>
             <Text className="text-black text-[14px] leading-[24px]">
               Recebemos uma solicitação para redefinir a senha da sua conta no <strong>Zebro</strong>.
-              Se foi você quem fez este pedido, basta clicar no botão abaixo para escolher uma nova senha.
+              Se foi você quem fez este pedido, utilize o código de segurança abaixo para escolher uma nova senha.
             </Text>
-            <Section className="text-center mt-[32px] mb-[32px]">
-              {/* NOTE: {{ .ConfirmationURL }} is used by Supabase for the reset link */}
-              <Button
-                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-4 py-3"
-                href="{{ .ConfirmationURL }}"
-              >
-                Redefinir minha Senha
-              </Button>
+            
+            <Section className="bg-[#f4f4f4] rounded my-[16px] py-[16px] text-center">
+              {/* NOTE: {{ .Token }} is used by Supabase to inject the 6-digit OTP code */}
+              <Text className="text-[32px] font-bold tracking-[8px] text-[#000000] m-0 p-0">
+                {{ .Token }}
+              </Text>
             </Section>
+
             <Text className="text-black text-[14px] leading-[24px]">
-              Este link é válido por 24 horas. Se você não solicitou a alteração de senha, pode ignorar este e-mail com segurança (sua conta continua protegida).
+              Este código é válido por 24 horas. Insira-o na tela de recuperação de senha no site para continuar.
+            </Text>
+            
+            <Text className="text-black text-[14px] leading-[24px] mt-[16px]">
+              Se você não solicitou a alteração de senha, pode ignorar este e-mail com segurança (sua conta continua protegida).
             </Text>
             <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
             <Text className="text-[#666666] text-[12px] leading-[24px]">
