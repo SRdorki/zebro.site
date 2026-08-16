@@ -127,20 +127,31 @@ export async function POST(request: Request) {
           .eq('owner_id', userId);
       }
 
-      await supabaseAdmin
-        .from('billing_invoices')
-        .insert({
-          user_id: userId,
-          asaas_payment_id: payment.id,
-          amount: payment.value,
-          status: 'PAID',
-          due_date: payment.dueDate,
-          payment_date: payment.paymentDate || new Date().toISOString(),
-          invoice_url: payment.invoiceUrl
-        })
-        .then(({ error }) => {
-          if (error) console.log("[Webhook] Could not insert invoice:", error.message);
-        });
+      // Get user's primary workspace for the invoice
+      const { data: userWs } = await supabaseAdmin
+        .from('workspaces')
+        .select('id')
+        .eq('owner_id', userId)
+        .single();
+
+      if (userWs) {
+        await supabaseAdmin
+          .from('billing_invoices')
+          .insert({
+            workspace_id: userWs.id,
+            asaas_payment_id: payment.id,
+            amount: payment.value,
+            status: 'PAID',
+            due_date: payment.dueDate,
+            payment_date: payment.paymentDate || new Date().toISOString(),
+            invoice_url: payment.invoiceUrl
+          })
+          .then(({ error }) => {
+            if (error) console.log("[Webhook] Could not insert invoice:", error.message);
+          });
+      } else {
+        console.log("[Webhook] Could not insert invoice: User has no workspace.");
+      }
 
     } else if (payload.event === 'PAYMENT_OVERDUE') {
       await supabaseAdmin
