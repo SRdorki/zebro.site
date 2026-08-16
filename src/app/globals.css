@@ -252,18 +252,46 @@
   to { transform: translateY(-2000px); }
 }
 
+:root {
+  --ink-900: #1c1c1e;
+  --ink-800: #222224;
+  --ink-700: #2c2c2e;
+  --ink-600: #3a3a3c;
+  --platinum: #c7c7cc;
+  --platinum-soft: #d6d6db;
+  --platinum-dim: #9a9aa0;
+  --paper: #f6f5f2;
+  --paper2: #efeee9;
+  --rail: rgba(28,28,30,0.1);
+  --sheen: rgba(255,255,255,0.8);
+}
+
+.dark {
+  --ink-900: #ffffff;
+  --ink-800: #f4f4f5;
+  --ink-700: #e4e4e7;
+  --ink-600: #a1a1aa;
+  --platinum: #3f3f46;
+  --platinum-soft: #27272a;
+  --platinum-dim: #52525b;
+  --paper: #09090b;
+  --paper2: #18181b;
+  --rail: rgba(255,255,255,0.1);
+  --sheen: rgba(0,0,0,0.8);
+}
+
 @theme {
-  --color-ink-900: #1c1c1e;
-  --color-ink-800: #222224;
-  --color-ink-700: #2c2c2e;
-  --color-ink-600: #3a3a3c;
-  --color-platinum: #c7c7cc;
-  --color-platinum-soft: #d6d6db;
-  --color-platinum-dim: #9a9aa0;
-  --color-paper: #f6f5f2;
-  --color-paper2: #efeee9;
-  --color-rail: rgba(28,28,30,0.1);
-  --color-sheen: rgba(255,255,255,0.8);
+  --color-ink-900: var(--ink-900);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-600: var(--ink-600);
+  --color-platinum: var(--platinum);
+  --color-platinum-soft: var(--platinum-soft);
+  --color-platinum-dim: var(--platinum-dim);
+  --color-paper: var(--paper);
+  --color-paper2: var(--paper2);
+  --color-rail: var(--rail);
+  --color-sheen: var(--sheen);
 }
 
 @layer utilities {
