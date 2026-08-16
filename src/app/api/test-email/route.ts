@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     const data = await resend.emails.send({
-      from: 'onboarding@resend.dev', // Default sender for testing in Resend
+      from: 'Zebro <suporte@zebro.site>', // The official sender email
       to: [email], // In testing phase, this MUST be the email address you registered Resend with
       subject: subject || 'Test Email from Zebro',
       html: `

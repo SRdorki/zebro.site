@@ -168,7 +168,7 @@ export async function POST(request: Request) {
           }));
           
           await resend.emails.send({
-            from: 'Zebro <onboarding@resend.dev>',
+            from: 'Zebro <suporte@zebro.site>',
             to: [userEmail],
             subject: 'Pagamento Confirmado - Zebro',
             html: html,

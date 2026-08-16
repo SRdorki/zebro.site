@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     // Send the email
     const data = await resend.emails.send({
-      from: 'Zebro <onboarding@resend.dev>',
+      from: 'Zebro <suporte@zebro.site>',
       to: [user.email],
       subject: 'Bem-vindo ao Zebro! 🦓',
       html: html,
