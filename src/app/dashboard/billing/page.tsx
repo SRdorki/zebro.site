@@ -97,17 +97,17 @@ export default async function BillingPage() {
     { 
       id: '97', name: 'Essencial', price: 'R$ 97', numericValue: 97,
       features: ['Retenção Ilimitada', 'Sem Anúncios', '100 GB Armazenamento', '500 GB Bandwidth'],
-      paymentLink: 'https://sandbox.asaas.com/c/gync4qihvdnd7kdv'
+      paymentLink: process.env.NEXT_PUBLIC_ASAAS_LINK_97 || null
     },
     { 
       id: '197', name: 'Pro', price: 'R$ 197', numericValue: 197,
       features: ['Armazenamento Infinito', 'Bandwidth Ilimitado', 'Suporte Prioritário'],
-      paymentLink: null
+      paymentLink: process.env.NEXT_PUBLIC_ASAAS_LINK_197 || null
     },
     { 
       id: '297', name: 'Premium', price: 'R$ 297', numericValue: 297,
       features: ['Armazenamento Infinito', 'Bandwidth Ilimitado', 'Acesso Administrativo', 'Suporte VIP'],
-      paymentLink: null
+      paymentLink: process.env.NEXT_PUBLIC_ASAAS_LINK_297 || null
     },
   ];
 
