@@ -52,6 +52,7 @@ export async function signup(formData: FormData) {
         name: workspaceName,
         slug,
         owner_id: authData.user.id,
+        plan: 'none',
       })
       .select()
       .single();

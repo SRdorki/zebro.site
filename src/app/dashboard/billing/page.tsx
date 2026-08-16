@@ -34,14 +34,28 @@ export default async function BillingPage() {
 
   let totalStorageBytes = 0;
   let totalViews = 0;
-  let currentPlan = 'free'; // default
+  let currentPlan = 'none'; // default
+  let actualWorkspaceId = workspaceId;
 
-  if (workspaceId) {
+  if (!actualWorkspaceId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: wm } = await supabase
+        .from("workspace_members")
+        .select("workspace_id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .single();
+      if (wm) actualWorkspaceId = wm.workspace_id;
+    }
+  }
+
+  if (actualWorkspaceId) {
     // Busca o plano do workspace
     const { data: wsData } = await supabase
       .from("workspaces")
       .select("plan")
-      .eq("id", workspaceId)
+      .eq("id", actualWorkspaceId)
       .single();
     
     if (wsData?.plan) currentPlan = wsData.plan;
@@ -49,7 +63,7 @@ export default async function BillingPage() {
     const { data: videosData } = await supabase
       .from("videos")
       .select("size_bytes")
-      .eq("workspace_id", workspaceId);
+      .eq("workspace_id", actualWorkspaceId);
 
     if (videosData) {
       totalStorageBytes = videosData.reduce((acc, curr) => acc + (curr.size_bytes || 0), 0);
@@ -58,7 +72,7 @@ export default async function BillingPage() {
     const { data: viewsData } = await supabase
       .from("daily_video_stats")
       .select("views")
-      .eq("workspace_id", workspaceId);
+      .eq("workspace_id", actualWorkspaceId);
 
     if (viewsData) {
       totalViews = viewsData.reduce((acc, curr) => acc + (curr.views || 0), 0);
@@ -189,6 +203,16 @@ export default async function BillingPage() {
                   <Button className="w-full mt-8" variant="outline" disabled>
                     Plano Atual
                   </Button>
+                ) : p.id === 'free' && currentPlan === 'none' ? (
+                  <form action={async () => {
+                    "use server";
+                    const { selectFreePlan } = await import('./actions');
+                    if (actualWorkspaceId) await selectFreePlan(actualWorkspaceId);
+                  }}>
+                    <Button className="w-full mt-8" variant="default" type="submit">
+                      Começar Grátis
+                    </Button>
+                  </form>
                 ) : p.id === 'free' ? (
                   <Button className="w-full mt-8" variant="outline" disabled>
                     Grátis

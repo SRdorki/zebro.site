@@ -4,6 +4,7 @@ import { WorkspaceProvider, Workspace } from "@/components/providers/workspace-p
 import { cookies } from "next/headers";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
+import { PlanGuard } from "@/components/dashboard/plan-guard";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -16,7 +17,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Fetch workspaces for this user
   const { data: workspaceMembers, error: wmError } = await supabase
     .from("workspace_members")
-    .select("workspace:workspaces(id, name, slug, logo_url)")
+    .select("workspace:workspaces(id, name, slug, logo_url, plan)")
     .eq("user_id", user.id);
 
   if (wmError) {
@@ -32,6 +33,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <WorkspaceProvider initialWorkspaces={workspaces} initialActiveWorkspace={initialActiveWorkspace}>
+      <PlanGuard />
       <div className="flex min-h-screen bg-background">
         <Sidebar />
         <div className="flex flex-1 flex-col overflow-hidden">
