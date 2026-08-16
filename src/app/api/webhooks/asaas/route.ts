@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-
+import { resend } from "@/lib/resend";
+import { render } from "@react-email/render";
+import PaymentConfirmedEmail from "@/emails/PaymentConfirmedEmail";
 export async function POST(request: Request) {
   try {
     const asaasToken = request.headers.get("asaas-access-token");
@@ -151,6 +153,30 @@ export async function POST(request: Request) {
           });
       } else {
         console.log("[Webhook] Could not insert invoice: User has no workspace.");
+      }
+
+      // Send payment confirmation email
+      try {
+        const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+        const userEmail = authUser?.user?.email;
+        
+        if (userEmail && resend) {
+          const planNameMap: Record<string, string> = { '97': 'Zebro Essencial', '197': 'Zebro Pro', '297': 'Zebro Premium' };
+          const html = await render(PaymentConfirmedEmail({
+            planName: planNameMap[planId] || 'Zebro Premium',
+            amount: payment.value ? `R$ ${payment.value.toFixed(2).replace('.', ',')}` : undefined,
+          }));
+          
+          await resend.emails.send({
+            from: 'Zebro <onboarding@resend.dev>',
+            to: [userEmail],
+            subject: 'Pagamento Confirmado - Zebro',
+            html: html,
+          });
+          console.log("[Webhook] Payment email sent to", userEmail);
+        }
+      } catch (emailErr) {
+        console.error("[Webhook] Failed to send payment email:", emailErr);
       }
 
     } else if (payload.event === 'PAYMENT_OVERDUE') {
