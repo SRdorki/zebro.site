@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from 'react';
+import { useState, useRef, useEffect, Suspense, Fragment } from 'react';
 import { Icon } from '@iconify/react';
 import { createClient } from '@/lib/supabase/client';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -127,7 +127,7 @@ function VerifyOTPForm() {
         {/* OTP Input Row */}
         <div role="group" aria-label="One-time passcode" className="flex items-center justify-center gap-2.5 sm:gap-3 mt-8">
           {otp.map((digit, index) => (
-            <React.Fragment key={index}>
+            <Fragment key={index}>
               <input
                 type="text"
                 inputMode="numeric"
@@ -142,7 +142,7 @@ function VerifyOTPForm() {
               {index === 2 && (
                 <div className="mx-0.5 h-px w-3 bg-platinum shrink-0"></div>
               )}
-            </React.Fragment>
+            </Fragment>
           ))}
         </div>
 
