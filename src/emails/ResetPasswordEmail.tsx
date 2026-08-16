@@ -35,7 +35,7 @@ export const ResetPasswordEmail = () => {
             <Section className="bg-[#f4f4f4] rounded my-[16px] py-[16px] text-center">
               {/* NOTE: {{ .Token }} is used by Supabase to inject the 6-digit OTP code */}
               <Text className="text-[32px] font-bold tracking-[8px] text-[#000000] m-0 p-0">
-                {{ .Token }}
+                {"{{ .Token }}"}
               </Text>
             </Section>
 
