@@ -279,11 +279,11 @@ export default function VerifyOTPPage() {
             </div>
 
             <DialogFooter className="sm:justify-start">
-              <DialogClose asChild>
+              <DialogClose render={
                 <button type="button" className="w-full py-2.5 bg-primary/10 text-primary rounded-lg text-sm font-semibold hover:bg-primary/20 transition-colors">
                   Entendi, vou tentar novamente
                 </button>
-              </DialogClose>
+              } />
             </DialogFooter>
           </DialogContent>
         </Dialog>
