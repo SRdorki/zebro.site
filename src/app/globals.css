@@ -251,3 +251,73 @@
   from { transform: translateY(0px); }
   to { transform: translateY(-2000px); }
 }
+
+@theme {
+  --color-ink-900: #1c1c1e;
+  --color-ink-800: #222224;
+  --color-ink-700: #2c2c2e;
+  --color-ink-600: #3a3a3c;
+  --color-platinum: #c7c7cc;
+  --color-platinum-soft: #d6d6db;
+  --color-platinum-dim: #9a9aa0;
+  --color-paper: #f6f5f2;
+  --color-paper2: #efeee9;
+  --color-rail: rgba(28,28,30,0.1);
+  --color-sheen: rgba(255,255,255,0.8);
+}
+
+@layer utilities {
+  .tracking-tightest {
+    letter-spacing: -0.04em;
+  }
+  .shadow-card {
+    box-shadow: 0 40px 90px -50px rgba(28,28,30,0.55);
+  }
+  .shadow-otp-focus {
+    box-shadow: 0 10px 15px -3px rgba(28,28,30,0.1), 0 4px 6px -4px rgba(28,28,30,0.1);
+  }
+  .otp-input:focus {
+    outline: none;
+    border-color: #1c1c1e;
+    box-shadow: 0 0 0 4px rgba(28,28,30,0.08), 0 10px 15px -3px rgba(28,28,30,0.1);
+    transform: translateY(-1px);
+  }
+  .otp-input.filled {
+    border-color: #2c2c2e;
+    background-color: #ffffff;
+  }
+  .verify-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px -5px rgba(28,28,30,0.25);
+  }
+  .hover-underline {
+    position: relative;
+  }
+  .hover-underline::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: currentColor;
+    transition: width 0.3s ease;
+  }
+  .hover-underline:hover::after {
+    width: 100%;
+  }
+  .grain-veil {
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(28,28,30,0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(28,28,30,0.05) 0%, transparent 50%);
+  }
+}
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-rise-1 { animation: floatUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.1s; opacity: 0; }
+.animate-rise-2 { animation: floatUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s; opacity: 0; }
+.animate-rise-3 { animation: floatUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.3s; opacity: 0; }

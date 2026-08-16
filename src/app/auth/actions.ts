@@ -76,3 +76,20 @@ export async function logout() {
   await supabase.auth.signOut();
   redirect("/login");
 }
+
+export async function resetPassword(formData: FormData) {
+  const supabase = await createClient();
+  const email = formData.get("email") as string;
+
+  if (!email) {
+    redirect("/forgot-password?error=E-mail é obrigatório.");
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+  if (error) {
+    redirect(`/forgot-password?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect(`/auth/verify-otp?email=${encodeURIComponent(email)}`);
+}
