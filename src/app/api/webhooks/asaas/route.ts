@@ -6,7 +6,9 @@ export async function POST(request: Request) {
     const asaasToken = request.headers.get("asaas-access-token");
     const secret = process.env.ASAAS_WEBHOOK_SECRET;
 
-    if (secret && asaasToken !== secret) {
+    // Only validate token if a secret is configured
+    if (secret && secret.length > 0 && asaasToken !== secret) {
+      console.log("[Webhook] Token mismatch. Received:", asaasToken, "Expected:", secret?.substring(0, 10) + "...");
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
