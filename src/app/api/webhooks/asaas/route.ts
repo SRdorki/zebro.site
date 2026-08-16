@@ -110,6 +110,21 @@ export async function POST(request: Request) {
         .update({ subscription_status: 'ACTIVE' })
         .eq('id', userId);
 
+      // Update workspace plan based on the payment value
+      const val = Math.floor(payment.value || 0);
+      let planId = 'free';
+      if (val === 97) planId = '97';
+      else if (val === 197) planId = '197';
+      else if (val === 297) planId = '297';
+      
+      if (planId !== 'free') {
+        console.log(`[Webhook] Upgrading workspace to plan: ${planId}`);
+        await supabaseAdmin
+          .from('workspaces')
+          .update({ plan: planId })
+          .eq('owner_id', userId);
+      }
+
       await supabaseAdmin
         .from('billing_invoices')
         .insert({
