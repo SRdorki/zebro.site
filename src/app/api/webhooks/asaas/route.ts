@@ -110,12 +110,14 @@ export async function POST(request: Request) {
         .update({ subscription_status: 'ACTIVE' })
         .eq('id', userId);
 
-      // Update workspace plan based on the payment value
+      // Update workspace plan based on the payment description or value
+      const desc = (payment.description || '').toLowerCase();
       const val = Math.floor(payment.value || 0);
       let planId = 'free';
-      if (val === 97) planId = '97';
-      else if (val === 197) planId = '197';
-      else if (val === 297) planId = '297';
+      
+      if (desc.includes('essencial') || val === 97) planId = '97';
+      else if (desc.includes('pro') || val === 197) planId = '197';
+      else if (desc.includes('premium') || val === 297) planId = '297';
       
       if (planId !== 'free') {
         console.log(`[Webhook] Upgrading workspace to plan: ${planId}`);
