@@ -306,13 +306,13 @@
   }
   .otp-input:focus {
     outline: none;
-    border-color: #1c1c1e;
-    box-shadow: 0 0 0 4px rgba(28,28,30,0.08), 0 10px 15px -3px rgba(28,28,30,0.1);
+    border-color: var(--ink-900);
+    box-shadow: 0 0 0 4px var(--rail), 0 10px 15px -3px var(--rail);
     transform: translateY(-1px);
   }
   .otp-input.filled {
-    border-color: #2c2c2e;
-    background-color: #ffffff;
+    border-color: var(--ink-700);
+    background-color: var(--paper);
   }
   .verify-btn:hover {
     transform: translateY(-1px);

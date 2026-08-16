@@ -137,7 +137,7 @@ function VerifyOTPForm() {
                 onChange={(e) => handleChange(index, e)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                className={`otp-input w-[44px] sm:w-[50px] h-[58px] rounded-xl border border-ink-900/20 bg-white/70 text-center font-bold text-[22px] text-ink-900 shadow-inner transition-all duration-200 ${digit ? 'filled' : ''}`}
+                className={`otp-input w-[44px] sm:w-[50px] h-[58px] rounded-xl border border-ink-900/20 bg-white/70 dark:bg-paper2/70 text-center font-bold text-[22px] text-ink-900 shadow-inner transition-all duration-200 ${digit ? 'filled' : ''}`}
               />
               {index === 2 && (
                 <div className="mx-0.5 h-px w-3 bg-platinum shrink-0"></div>
@@ -204,7 +204,7 @@ export default function VerifyOTPPage() {
     <div className="min-h-screen bg-paper font-sans text-ink-900 selection:bg-ink-900 selection:text-white flex flex-col items-center justify-center p-6 grain-veil">
       
       {/* Eyebrow Pill (Outside Card) */}
-      <div className="animate-rise-1 inline-flex items-center gap-1.5 rounded-full border border-ink-900/10 bg-white/70 px-3.5 py-1.5 shadow-sm mb-6">
+      <div className="animate-rise-1 inline-flex items-center gap-1.5 rounded-full border border-ink-900/10 bg-white/70 dark:bg-paper2/70 px-3.5 py-1.5 shadow-sm mb-6">
         <Icon icon="ph:shield-check-fill" className="text-ink-900 text-sm" />
         <span className="text-[11.5px] uppercase font-semibold tracking-wider text-ink-700">
           Autenticação em duas etapas
@@ -212,7 +212,7 @@ export default function VerifyOTPPage() {
       </div>
 
       {/* Verify Glass Card */}
-      <div className="animate-rise-2 w-full max-w-[440px] relative overflow-hidden rounded-[26px] border border-ink-900/10 bg-white/85 p-8 sm:p-10 shadow-card backdrop-blur-sm">
+      <div className="animate-rise-2 w-full max-w-[440px] relative overflow-hidden rounded-[26px] border border-ink-900/10 bg-white/85 dark:bg-paper2/85 p-8 sm:p-10 shadow-card backdrop-blur-sm">
         <div className="absolute inset-x-0 top-0 h-[1px] bg-rail"></div>
         <div className="absolute inset-x-0 top-[1px] h-[1px] bg-sheen"></div>
         <Suspense fallback={<div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-ink-900 border-t-transparent rounded-full animate-spin"></div></div>}>
