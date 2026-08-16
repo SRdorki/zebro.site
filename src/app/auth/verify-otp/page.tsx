@@ -117,10 +117,10 @@ function VerifyOTPForm() {
 
       {/* Typography */}
       <h1 className="text-[26px] font-extrabold text-ink-900 tracking-tightest leading-tight mb-2 text-center">
-        Verify it's you
+        Verifique sua identidade
       </h1>
       <p className="text-[14px] text-ink-700/80 text-center max-w-[19rem]">
-        We sent a 6-digit code to <strong className="text-ink-900 font-semibold">{email ? email : 'your email'}</strong>. Pop it in below and you're through.
+        Enviamos um código de 6 dígitos para <strong className="text-ink-900 font-semibold">{email ? email : 'seu e-mail'}</strong>. Insira-o abaixo para continuar.
       </p>
       
       <form onSubmit={handleSubmit} className="w-full">
@@ -161,7 +161,7 @@ function VerifyOTPForm() {
         )}
         
         {success && (
-          <p className="text-green-600 font-medium text-sm text-center mt-4">Code verified! Redirecting...</p>
+          <p className="text-green-600 font-medium text-sm text-center mt-4">Código verificado! Redirecionando...</p>
         )}
 
         {/* Verify Button */}
@@ -170,7 +170,7 @@ function VerifyOTPForm() {
           disabled={isSubmitting || success || otp.join('').length !== 6}
           className="verify-btn w-full mt-8 py-4 rounded-2xl bg-ink-900 text-paper text-[15px] font-semibold flex items-center justify-center gap-2 shadow-[0_4px_14px_0_rgba(28,28,30,0.15)] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Verifying...' : 'Verify code'}
+          {isSubmitting ? 'Verificando...' : 'Verificar código'}
           {!isSubmitting && <Icon icon="ph:arrow-right-bold" />}
         </button>
       </form>
@@ -178,21 +178,21 @@ function VerifyOTPForm() {
       {/* Resend Countdown */}
       <div className="flex items-center justify-center gap-1.5 mt-5 text-[13.5px] text-ink-700/80">
         <Icon icon="ph:clock-countdown" className="text-platinum-dim text-lg" />
-        <span>Didn't get it?</span>
+        <span>Não recebeu?</span>
         <button 
           type="button"
           onClick={handleResend}
           disabled={countdown > 0}
           className={`font-medium transition-colors ${countdown > 0 ? 'text-platinum-dim cursor-not-allowed' : 'text-ink-900 hover:underline'}`}
         >
-          {countdown > 0 ? `Resend in 0:${countdown.toString().padStart(2, '0')}` : 'Resend code'}
+          {countdown > 0 ? `Reenviar em 0:${countdown.toString().padStart(2, '0')}` : 'Reenviar código'}
         </button>
       </div>
 
       {/* Reassurance Line */}
       <div className="flex items-center gap-1.5 mt-7 text-[12.5px] text-ink-700/60">
         <Icon icon="ph:lock-simple" className="text-sm" />
-        <span>End-to-end encrypted. We never store your codes.</span>
+        <span>Criptografia de ponta-a-ponta. Nós nunca armazenamos seus códigos.</span>
       </div>
     </div>
   );
@@ -201,78 +201,37 @@ function VerifyOTPForm() {
 export default function VerifyOTPPage() {
 
   return (
-    <div className="min-h-screen bg-paper font-sans text-ink-900 selection:bg-ink-900 selection:text-white flex flex-col grain-veil">
-      {/* Sticky Navigation Bar */}
-      <nav className="sticky top-0 z-50 w-full bg-paper/80 backdrop-blur-xl border-b border-ink-900/10">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-ink-900 flex items-center justify-center">
-              <Icon icon="ph:aperture-bold" className="text-paper text-lg" />
-            </div>
-            <span className="font-bold text-[15px] tracking-tightest text-ink-900">Aperture</span>
-          </a>
+    <div className="min-h-screen bg-paper font-sans text-ink-900 selection:bg-ink-900 selection:text-white flex flex-col items-center justify-center p-6 grain-veil">
+      
+      {/* Eyebrow Pill (Outside Card) */}
+      <div className="animate-rise-1 inline-flex items-center gap-1.5 rounded-full border border-ink-900/10 bg-white/70 px-3.5 py-1.5 shadow-sm mb-6">
+        <Icon icon="ph:shield-check-fill" className="text-ink-900 text-sm" />
+        <span className="text-[11.5px] uppercase font-semibold tracking-wider text-ink-700">
+          Autenticação em duas etapas
+        </span>
+      </div>
 
-          <div className="hidden md:flex items-center gap-9">
-            <a href="#" className="text-[13.5px] font-medium text-ink-700 hover-underline">Product</a>
-            <a href="#" className="text-[13.5px] font-medium text-ink-700 hover-underline">Security</a>
-            <a href="#" className="text-[13.5px] font-medium text-ink-700 hover-underline">Pricing</a>
-            <a href="#" className="text-[13.5px] font-medium text-ink-700 hover-underline">Docs</a>
-          </div>
+      {/* Verify Glass Card */}
+      <div className="animate-rise-2 w-full max-w-[440px] relative overflow-hidden rounded-[26px] border border-ink-900/10 bg-white/85 p-8 sm:p-10 shadow-card backdrop-blur-sm">
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-rail"></div>
+        <div className="absolute inset-x-0 top-[1px] h-[1px] bg-sheen"></div>
+        <Suspense fallback={<div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-ink-900 border-t-transparent rounded-full animate-spin"></div></div>}>
+          <VerifyOTPForm />
+        </Suspense>
+      </div>
 
-          <div className="flex items-center gap-4">
-            <a href="#" className="hidden sm:block text-[13px] font-medium text-ink-700 hover:text-ink-900 transition-colors">Sign in</a>
-            <button className="rounded-full bg-ink-900 text-paper text-[13px] font-semibold px-4 py-1.5 hover:bg-ink-700 transition-colors">
-              Get started
-            </button>
-          </div>
-        </div>
-      </nav>
+      {/* Helper Links Row (Outside Card) */}
+      <div className="animate-rise-3 flex items-center gap-4 mt-8 text-[12.5px] text-ink-700/70">
+        <a href="/login" className="flex items-center gap-1 hover-underline">
+          <Icon icon="ph:arrow-u-up-left" />
+          Voltar para o login
+        </a>
+        <div className="w-[1px] h-3.5 bg-ink-900/15"></div>
+        <a href="#" className="hover-underline">
+          Precisa de ajuda?
+        </a>
+      </div>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-6">
-        {/* Eyebrow Pill */}
-        <div className="animate-rise-1 inline-flex items-center gap-1.5 rounded-full border border-ink-900/10 bg-white/70 px-3.5 py-1.5 shadow-sm mb-6">
-          <Icon icon="ph:shield-check-fill" className="text-ink-900 text-sm" />
-          <span className="text-[11.5px] uppercase font-semibold tracking-wider text-ink-700">
-            Two-factor
-          </span>
-        </div>
-
-        {/* Verify Glass Card */}
-        <div className="animate-rise-2 w-full max-w-[440px] relative overflow-hidden rounded-[26px] border border-ink-900/10 bg-white/85 p-8 sm:p-10 shadow-card backdrop-blur-sm">
-          <div className="absolute inset-x-0 top-0 h-[1px] bg-rail"></div>
-          <div className="absolute inset-x-0 top-[1px] h-[1px] bg-sheen"></div>
-          <Suspense fallback={<div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-ink-900 border-t-transparent rounded-full animate-spin"></div></div>}>
-            <VerifyOTPForm />
-          </Suspense>
-        </div>
-
-        {/* Helper Links Row */}
-        <div className="animate-rise-3 flex items-center gap-4 mt-6 text-[12.5px] text-ink-700/70">
-          <a href="/login" className="flex items-center gap-1 hover-underline">
-            <Icon icon="ph:arrow-u-up-left" />
-            Back to login
-          </a>
-          <div className="w-[1px] h-3.5 bg-ink-900/15"></div>
-          <a href="#" className="hover-underline">
-            Need help?
-          </a>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="w-full border-t border-ink-900/10 bg-paper2/60 mt-auto">
-        <div className="max-w-6xl mx-auto px-6 py-7 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-[12.5px] text-ink-700/70">
-            <Icon icon="ph:aperture-bold" className="text-sm text-ink-900" />
-            <span>© 2026 Aperture Labs</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <a href="#" className="text-[12.5px] text-ink-700/70 hover-underline">Privacy</a>
-            <a href="#" className="text-[12.5px] text-ink-700/70 hover-underline">Terms</a>
-            <a href="#" className="text-[12.5px] text-ink-700/70 hover-underline">Status</a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
