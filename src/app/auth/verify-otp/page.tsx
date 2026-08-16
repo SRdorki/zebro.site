@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, Suspense, Fragment } from 'react';
 import { Icon } from '@iconify/react';
 import { createClient } from '@/lib/supabase/client';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 
 function VerifyOTPForm() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -227,9 +228,65 @@ export default function VerifyOTPPage() {
           Voltar para o login
         </a>
         <div className="w-[1px] h-3.5 bg-ink-900/15"></div>
-        <a href="#" className="hover-underline">
-          Precisa de ajuda?
-        </a>
+        <Dialog>
+          <DialogTrigger className="hover-underline cursor-pointer">
+            Precisa de ajuda?
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md p-6">
+            <DialogHeader>
+              <DialogTitle className="text-xl">Precisa de ajuda com o código?</DialogTitle>
+              <DialogDescription className="text-[14px] mt-2">
+                Aqui estão algumas dicas caso não consiga acessar sua conta.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="flex flex-col gap-4 py-4">
+              <div className="flex gap-3 items-start">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon icon="ph:envelope-simple" className="text-primary text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground">Verifique a caixa de spam</h4>
+                  <p className="text-[13px] text-muted-foreground mt-1">
+                    Às vezes, nosso e-mail com o código de 6 dígitos pode cair na lixeira, spam ou promoções. Procure por "Zebro" na barra de pesquisa.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-3 items-start">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon icon="ph:clock-clockwise" className="text-primary text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground">Código expirado</h4>
+                  <p className="text-[13px] text-muted-foreground mt-1">
+                    O código tem validade de 24 horas. Se já passou desse tempo, clique em "Reenviar código" para receber um novo.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 items-start">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon icon="ph:headset" className="text-primary text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground">Suporte técnico</h4>
+                  <p className="text-[13px] text-muted-foreground mt-1">
+                    Ainda com problemas? Envie um e-mail para <a href="mailto:suporte@zebro.site" className="text-primary hover:underline font-medium">suporte@zebro.site</a> informando o seu e-mail cadastrado.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="sm:justify-start">
+              <DialogClose asChild>
+                <button type="button" className="w-full py-2.5 bg-primary/10 text-primary rounded-lg text-sm font-semibold hover:bg-primary/20 transition-colors">
+                  Entendi, vou tentar novamente
+                </button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
     </div>
