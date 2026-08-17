@@ -3,6 +3,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Video } from "lucide-react";
+import { ViewsChart } from "@/components/dashboard/views-chart";
 
 function formatBytes(bytes: number, decimals = 2) {
   if (!+bytes) return '0 Bytes';
@@ -33,6 +34,7 @@ export default async function DashboardPage() {
   let totalStorageBytes = 0;
   let totalViews = 0;
   let recentVideos: any[] = [];
+  let chartData: { date: string; views: number }[] = [];
 
   if (workspaceId) {
     // 1. Fetch total videos and storage used
@@ -49,11 +51,21 @@ export default async function DashboardPage() {
     // 2. Fetch total views
     const { data: viewsData } = await supabase
       .from("daily_video_stats")
-      .select("views")
+      .select("date, views")
       .eq("workspace_id", workspaceId);
 
     if (viewsData) {
       totalViews = viewsData.reduce((acc, curr) => acc + (curr.views || 0), 0);
+      
+      const grouped = viewsData.reduce((acc, curr) => {
+        acc[curr.date] = (acc[curr.date] || 0) + curr.views;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      chartData = Object.keys(grouped).sort().map(date => ({
+        date,
+        views: grouped[date]
+      }));
     }
 
     // 3. Fetch recent videos (Top 5)
@@ -118,11 +130,8 @@ export default async function DashboardPage() {
           <CardHeader>
             <CardTitle>Visualizações (Geral)</CardTitle>
           </CardHeader>
-          <CardContent className="pl-2">
-            {/* Gráfico de barras ou linha entraria aqui. Por hora um placeholder visual. */}
-            <div className="h-[200px] flex items-center justify-center text-muted-foreground border-dashed border-2 rounded-lg m-4 bg-muted/20">
-              <p className="text-sm">Gráfico de Visualizações em Breve</p>
-            </div>
+          <CardContent className="pl-0 pb-0">
+            <ViewsChart data={chartData} />
           </CardContent>
         </Card>
         <Card className="col-span-3 overflow-hidden">
