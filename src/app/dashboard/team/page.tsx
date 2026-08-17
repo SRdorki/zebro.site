@@ -25,21 +25,41 @@ export default function TeamPage() {
   const { activeWorkspace } = useWorkspace();
   const supabase = createClient();
   const [members, setMembers] = useState<any[]>([]);
+  const [invites, setInvites] = useState<any[]>([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(true);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("Viewer");
   const [isInviting, setIsInviting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (!activeWorkspace) return;
-    const fetchMembers = async () => {
-      const { data } = await supabase
+    const fetchTeam = async () => {
+      setIsLoadingMembers(true);
+      // Fetch members
+      const { data: membersData, error: membersError } = await supabase
         .from("workspace_members")
         .select("id, role, created_at, profiles(name, email)")
         .eq("workspace_id", activeWorkspace.id);
-      if (data) setMembers(data);
+      
+      if (membersError) console.error("Error fetching members:", membersError);
+      if (membersData) setMembers(membersData);
+
+      // Fetch pending invites
+      const { data: invitesData, error: invitesError } = await supabase
+        .from("workspace_invites")
+        .select("id, email, role, status, created_at")
+        .eq("workspace_id", activeWorkspace.id)
+        .eq("status", "PENDING");
+
+      if (invitesError) console.error("Error fetching invites:", invitesError);
+      if (invitesData) setInvites(invitesData);
+      
+      setIsLoadingMembers(false);
     };
-    fetchMembers();
+
+    if (activeWorkspace) {
+      fetchTeam();
+    }
   }, [activeWorkspace, supabase]);
 
   const handleInvite = async (e: React.FormEvent) => {
@@ -168,12 +188,26 @@ export default function TeamPage() {
           </TableHeader>
           <TableBody>
             {members.map(m => (
-              <TableRow key={m.id}>
+              <TableRow key={`member-${m.id}`}>
                 <TableCell>{m.profiles?.name || m.profiles?.email || 'Usuário Desconhecido'}</TableCell>
                 <TableCell><Badge variant="outline">{m.role}</Badge></TableCell>
-                <TableCell>Ativo</TableCell>
+                <TableCell><Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">Ativo</Badge></TableCell>
               </TableRow>
             ))}
+            {invites.map(i => (
+              <TableRow key={`invite-${i.id}`}>
+                <TableCell className="text-muted-foreground italic">{i.email}</TableCell>
+                <TableCell><Badge variant="outline">{i.role}</Badge></TableCell>
+                <TableCell><Badge variant="secondary" className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20">Pendente</Badge></TableCell>
+              </TableRow>
+            ))}
+            {members.length === 0 && invites.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                  Nenhum membro ou convite encontrado.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
