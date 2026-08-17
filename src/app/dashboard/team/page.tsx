@@ -98,11 +98,9 @@ export default function TeamPage() {
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Convidar Membro
-            </Button>
+          <DialogTrigger render={<Button />}>
+            <Plus className="mr-2 h-4 w-4" />
+            Convidar Membro
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <form onSubmit={handleInvite}>
@@ -126,7 +124,7 @@ export default function TeamPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role">Cargo</Label>
-                  <Select value={inviteRole} onValueChange={setInviteRole}>
+                  <Select value={inviteRole} onValueChange={(val) => setInviteRole(val || "Viewer")}>
                     <SelectTrigger id="role">
                       <SelectValue placeholder="Selecione um cargo" />
                     </SelectTrigger>
