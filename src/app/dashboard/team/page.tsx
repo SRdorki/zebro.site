@@ -66,7 +66,7 @@ export default function TeamPage() {
 
     // 3. Send the email via our new API route
     try {
-      await fetch('/api/team/send-invite-email', {
+      const res = await fetch('/api/team/send-invite-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -77,9 +77,20 @@ export default function TeamPage() {
           inviteLink: `${window.location.origin}/invite` // Assuming there is or will be an /invite page
         })
       });
-    } catch (err) {
+      
+      const responseData = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(responseData.error || "Erro desconhecido na API do Resend");
+      }
+    } catch (err: any) {
       console.error("Erro ao disparar email", err);
-      // We still consider the invite successful database-wise
+      toast.error(`Convite salvo, mas o e-mail falhou: ${err.message}`);
+      setIsInviting(false);
+      setIsDialogOpen(false);
+      setInviteEmail("");
+      setInviteRole("Viewer");
+      return;
     }
 
     setIsInviting(false);
