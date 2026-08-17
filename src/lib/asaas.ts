@@ -1,11 +1,10 @@
 export const ASAAS_API_URL = process.env.ASAAS_API_URL || 'https://sandbox.asaas.com/api/v3';
 
-// The API key starts with '$' which causes .env parsers to expand it as a variable.
-// We store the key without '$' and prepend it here.
+// We check if it already starts with $ to prevent double $$
 function getApiKey(): string {
-  const body = process.env.ASAAS_API_KEY_BODY;
-  if (!body) throw new Error("Asaas API key is not configured.");
-  return '$' + body;
+  const key = process.env.ASAAS_API_KEY_BODY || process.env.ASAAS_API_KEY;
+  if (!key) throw new Error("Asaas API key is not configured.");
+  return key.startsWith('$') ? key : '$' + key;
 }
 
 type AsaasCustomer = {
