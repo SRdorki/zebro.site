@@ -17,14 +17,18 @@ export async function POST(request: Request) {
 
     const html = await render(TeamInviteEmail({ inviterName, workspaceName, role, inviteLink }));
 
-    const data = await resend.emails.send({
+    const response = await resend.emails.send({
       from: 'Zebro <suporte@zebro.site>', // Make sure this domain is verified in Resend
       to: [email],
       subject: `Você foi convidado para colaborar no workspace ${workspaceName}`,
       html: html,
     });
 
-    return NextResponse.json({ success: true, data });
+    if (response.error) {
+      return NextResponse.json({ error: response.error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true, data: response.data });
   } catch (error: any) {
     console.error("Team Invite Email Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
