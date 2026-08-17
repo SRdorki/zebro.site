@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  LayoutDashboard, Video, Upload, ListVideo, BarChart3, 
-  FolderGit2, Users, Globe, Code2, CreditCard, Settings,
-  ChevronsUpDown, Check
-} from "lucide-react";
+  SquaresFour as LayoutDashboard, Video, Upload, Playlist as ListVideo, ChartBar as BarChart3, 
+  Folders as FolderGit2, Users, Globe, Code as Code2, CreditCard, Gear as Settings,
+  CaretUpDown as ChevronsUpDown, Check
+} from "@phosphor-icons/react";
 import { useWorkspace } from "@/components/providers/workspace-provider";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, 

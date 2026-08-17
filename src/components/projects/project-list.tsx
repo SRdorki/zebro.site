@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useWorkspace } from "@/components/providers/workspace-provider";
 import { Button } from "@/components/ui/button";
-import { Plus, MoreVertical, FolderGit2 } from "lucide-react";
+import { Plus, DotsThreeVertical as MoreVertical, Folders as FolderGit2 } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 

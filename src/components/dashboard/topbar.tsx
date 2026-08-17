@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search, LogOut, Menu } from "lucide-react";
+import { Bell, MagnifyingGlass as Search, SignOut as LogOut, List as Menu } from "@phosphor-icons/react";
 import { logout } from "@/app/auth/actions";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { sidebarLinks } from "./sidebar";

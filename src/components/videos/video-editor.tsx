@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { ZebroPlayer } from "@/components/player/zebro-player";
 import { Switch } from "@/components/ui/switch";
-import { Copy, Link as LinkIcon, Code, Eye, Lock, Globe, Share2, Trash2, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Copy, Link as LinkIcon, Code, Eye, Lock, Globe, ShareNetwork as Share2, Trash as Trash2, Image as ImageIcon, Spinner as Loader2 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import {
   Dialog,
