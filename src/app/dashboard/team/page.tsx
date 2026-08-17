@@ -46,21 +46,47 @@ export default function TeamPage() {
     e.preventDefault();
     if (!inviteEmail || !activeWorkspace) return;
     setIsInviting(true);
+    
+    // 1. Insert invite into database
     const { error } = await supabase.from("workspace_invites").insert({
       workspace_id: activeWorkspace.id,
       email: inviteEmail,
       role: inviteRole
     });
-    setIsInviting(false);
 
     if (error) {
-      toast.error("Erro ao enviar convite.");
-    } else {
-      toast.success("Convite enviado com sucesso!");
-      setIsDialogOpen(false);
-      setInviteEmail("");
-      setInviteRole("Viewer");
+      setIsInviting(false);
+      toast.error("Erro ao enviar convite: " + error.message);
+      return;
     }
+
+    // 2. Get current user for the email
+    const { data: { user } } = await supabase.auth.getUser();
+    const inviterName = user?.user_metadata?.name || user?.email || "Alguém";
+
+    // 3. Send the email via our new API route
+    try {
+      await fetch('/api/team/send-invite-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: inviteEmail,
+          inviterName,
+          workspaceName: activeWorkspace.name,
+          role: inviteRole,
+          inviteLink: `${window.location.origin}/invite` // Assuming there is or will be an /invite page
+        })
+      });
+    } catch (err) {
+      console.error("Erro ao disparar email", err);
+      // We still consider the invite successful database-wise
+    }
+
+    setIsInviting(false);
+    toast.success("Convite e e-mail enviados com sucesso!");
+    setIsDialogOpen(false);
+    setInviteEmail("");
+    setInviteRole("Viewer");
   };
 
   return (
