@@ -19,7 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "@phosphor-icons/react";
+import { Plus, Trash } from "@phosphor-icons/react";
+import { removeMember, cancelInvite } from "./actions";
 
 export default function TeamPage() {
   const { activeWorkspace } = useWorkspace();
@@ -31,34 +32,35 @@ export default function TeamPage() {
   const [inviteRole, setInviteRole] = useState("Viewer");
   const [isInviting, setIsInviting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isRemoving, setIsRemoving] = useState<string | null>(null);
+
+  const fetchTeam = async () => {
+    if (!activeWorkspace) return;
+
+    setIsLoadingMembers(true);
+    // Fetch members
+    const { data: membersData, error: membersError } = await supabase
+      .from("workspace_members")
+      .select("id, role, created_at, profiles(name)")
+      .eq("workspace_id", activeWorkspace.id);
+    
+    if (membersError) console.error("Error fetching members:", membersError);
+    if (membersData) setMembers(membersData);
+
+    // Fetch pending invites
+    const { data: invitesData, error: invitesError } = await supabase
+      .from("workspace_invites")
+      .select("id, email, role, status, created_at")
+      .eq("workspace_id", activeWorkspace.id)
+      .eq("status", "PENDING");
+
+    if (invitesError) console.error("Error fetching invites:", invitesError);
+    if (invitesData) setInvites(invitesData);
+    
+    setIsLoadingMembers(false);
+  };
 
   useEffect(() => {
-    const fetchTeam = async () => {
-      if (!activeWorkspace) return;
-
-      setIsLoadingMembers(true);
-      // Fetch members
-      const { data: membersData, error: membersError } = await supabase
-        .from("workspace_members")
-        .select("id, role, created_at, profiles(name)")
-        .eq("workspace_id", activeWorkspace.id);
-      
-      if (membersError) console.error("Error fetching members:", membersError);
-      if (membersData) setMembers(membersData);
-
-      // Fetch pending invites
-      const { data: invitesData, error: invitesError } = await supabase
-        .from("workspace_invites")
-        .select("id, email, role, status, created_at")
-        .eq("workspace_id", activeWorkspace.id)
-        .eq("status", "PENDING");
-
-      if (invitesError) console.error("Error fetching invites:", invitesError);
-      if (invitesData) setInvites(invitesData);
-      
-      setIsLoadingMembers(false);
-    };
-
     if (activeWorkspace) {
       fetchTeam();
     }
@@ -112,6 +114,7 @@ export default function TeamPage() {
       setIsDialogOpen(false);
       setInviteEmail("");
       setInviteRole("Viewer");
+      fetchTeam();
       return;
     }
 
@@ -120,6 +123,35 @@ export default function TeamPage() {
     setIsDialogOpen(false);
     setInviteEmail("");
     setInviteRole("Viewer");
+    fetchTeam();
+  };
+
+  const handleRemoveMember = async (memberId: string) => {
+    if (!activeWorkspace || !confirm("Tem certeza que deseja remover este membro?")) return;
+    setIsRemoving(memberId);
+    try {
+      await removeMember(memberId, activeWorkspace.id);
+      toast.success("Membro removido com sucesso!");
+      fetchTeam();
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsRemoving(null);
+    }
+  };
+
+  const handleCancelInvite = async (inviteId: string) => {
+    if (!activeWorkspace || !confirm("Tem certeza que deseja cancelar este convite?")) return;
+    setIsRemoving(inviteId);
+    try {
+      await cancelInvite(inviteId, activeWorkspace.id);
+      toast.success("Convite cancelado!");
+      fetchTeam();
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsRemoving(null);
+    }
   };
 
   return (
@@ -186,6 +218,7 @@ export default function TeamPage() {
               <TableHead>Usuário</TableHead>
               <TableHead>Cargo</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead className="w-[100px] text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -194,6 +227,17 @@ export default function TeamPage() {
                 <TableCell>{m.profiles?.name || 'Membro da Equipe'}</TableCell>
                 <TableCell><Badge variant="outline">{m.role}</Badge></TableCell>
                 <TableCell><Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">Ativo</Badge></TableCell>
+                <TableCell className="text-right">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8"
+                    onClick={() => handleRemoveMember(m.id)}
+                    disabled={isRemoving === m.id}
+                  >
+                    <Trash className="w-4 h-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
             {invites.map(i => (
@@ -201,11 +245,22 @@ export default function TeamPage() {
                 <TableCell className="text-muted-foreground italic">{i.email}</TableCell>
                 <TableCell><Badge variant="outline">{i.role}</Badge></TableCell>
                 <TableCell><Badge variant="secondary" className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20">Pendente</Badge></TableCell>
+                <TableCell className="text-right">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8"
+                    onClick={() => handleCancelInvite(i.id)}
+                    disabled={isRemoving === i.id}
+                  >
+                    <Trash className="w-4 h-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
             {members.length === 0 && invites.length === 0 && (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
                   Nenhum membro ou convite encontrado.
                 </TableCell>
               </TableRow>
