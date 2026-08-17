@@ -46,7 +46,14 @@ export async function signup(formData: FormData) {
     const workspaceName = userName ? `${userName}'s Workspace` : "Meu Workspace";
     const slug = `ws-${Math.random().toString(36).substring(2, 9)}`;
     
-    const { data: workspace } = await supabase
+    // Import here to use the standard client for admin tasks
+    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    
+    const { data: workspace } = await supabaseAdmin
       .from("workspaces")
       .insert({
         name: workspaceName,
@@ -58,7 +65,7 @@ export async function signup(formData: FormData) {
       .single();
 
     if (workspace) {
-      await supabase
+      await supabaseAdmin
         .from("workspace_members")
         .insert({
           workspace_id: workspace.id,
@@ -71,6 +78,7 @@ export async function signup(formData: FormData) {
   if (authData.user && !authData.session) {
     redirect(`/register?success=true&email=${encodeURIComponent(data.email)}`);
   }
+
 
   revalidatePath("/", "layout");
   redirect("/dashboard/billing");
