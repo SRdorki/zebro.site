@@ -68,6 +68,10 @@ export async function signup(formData: FormData) {
     }
   }
 
+  if (authData.user && !authData.session) {
+    redirect(`/register?success=true&email=${encodeURIComponent(data.email)}`);
+  }
+
   revalidatePath("/", "layout");
   redirect("/dashboard/billing");
 }

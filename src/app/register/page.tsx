@@ -5,9 +5,48 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { ArrowRight, Lock, Mail, User } from "lucide-react";
 
-export default async function RegisterPage(props: { searchParams: Promise<{ error?: string }> }) {
+export default async function RegisterPage(props: { searchParams: Promise<{ error?: string, success?: string, email?: string }> }) {
   const searchParams = await props.searchParams;
   const error = searchParams.error;
+  const isSuccess = searchParams.success === 'true';
+  const registeredEmail = searchParams.email;
+
+  if (isSuccess) {
+    return (
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background">
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+        <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
+
+        <div className="relative z-10 w-full max-w-md p-6">
+          <div className="backdrop-blur-2xl bg-card/60 rounded-3xl border border-white/10 shadow-2xl overflow-hidden relative text-center p-8 sm:p-10">
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+            
+            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <Mail className="w-8 h-8 text-primary" />
+            </div>
+            
+            <h1 className="text-2xl font-bold tracking-tight mb-3">Verifique seu e-mail</h1>
+            <p className="text-[15px] text-muted-foreground leading-relaxed mb-6">
+              Enviamos um link de confirmação para <br />
+              <strong className="text-foreground font-semibold">{registeredEmail || 'seu e-mail'}</strong>. <br />
+              Por favor, clique no link para ativar sua conta.
+            </p>
+
+            <Link href="/login">
+              <Button className="w-full h-12 rounded-xl text-md font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all">
+                Ir para o Login
+              </Button>
+            </Link>
+
+            <p className="text-[13px] text-muted-foreground mt-6">
+              Não recebeu? Verifique sua caixa de spam ou lixeira.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background">
