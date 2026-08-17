@@ -38,7 +38,7 @@ export default function TeamPage() {
       // Fetch members
       const { data: membersData, error: membersError } = await supabase
         .from("workspace_members")
-        .select("id, role, created_at, profiles(name, email)")
+        .select("id, role, created_at, profiles(name)")
         .eq("workspace_id", activeWorkspace.id);
       
       if (membersError) console.error("Error fetching members:", membersError);
@@ -189,7 +189,7 @@ export default function TeamPage() {
           <TableBody>
             {members.map(m => (
               <TableRow key={`member-${m.id}`}>
-                <TableCell>{m.profiles?.name || m.profiles?.email || 'Usuário Desconhecido'}</TableCell>
+                <TableCell>{m.profiles?.name || 'Membro da Equipe'}</TableCell>
                 <TableCell><Badge variant="outline">{m.role}</Badge></TableCell>
                 <TableCell><Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">Ativo</Badge></TableCell>
               </TableRow>
