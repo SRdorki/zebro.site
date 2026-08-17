@@ -34,6 +34,8 @@ export default function TeamPage() {
 
   useEffect(() => {
     const fetchTeam = async () => {
+      if (!activeWorkspace) return;
+
       setIsLoadingMembers(true);
       // Fetch members
       const { data: membersData, error: membersError } = await supabase
