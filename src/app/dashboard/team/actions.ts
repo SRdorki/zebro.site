@@ -3,13 +3,19 @@
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 
-const supabaseAdmin = createAdminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getAdminClient() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("Missing Supabase env vars");
+  }
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+}
 
 async function checkAdmin(workspaceId: string) {
   const supabase = await createServerClient();
+  const supabaseAdmin = getAdminClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -33,6 +39,7 @@ async function checkAdmin(workspaceId: string) {
 
 export async function removeMember(memberId: string, workspaceId: string) {
   const user = await checkAdmin(workspaceId);
+  const supabaseAdmin = getAdminClient();
 
   // Get the member to be removed
   const { data: targetMember } = await supabaseAdmin
@@ -62,6 +69,7 @@ export async function removeMember(memberId: string, workspaceId: string) {
 
 export async function cancelInvite(inviteId: string, workspaceId: string) {
   await checkAdmin(workspaceId);
+  const supabaseAdmin = getAdminClient();
 
   const { error } = await supabaseAdmin
     .from("workspace_invites")
