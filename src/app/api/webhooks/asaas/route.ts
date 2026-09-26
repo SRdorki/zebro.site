@@ -180,16 +180,28 @@ export async function POST(request: Request) {
       }
 
     } else if (payload.event === 'PAYMENT_OVERDUE') {
+      console.log("[Webhook] Pagamento atrasado, rebaixando plano para o usuário:", userId);
       await supabaseAdmin
         .from('profiles')
         .update({ subscription_status: 'OVERDUE' })
         .eq('id', userId);
 
+      await supabaseAdmin
+        .from('workspaces')
+        .update({ plan: 'none' })
+        .eq('owner_id', userId);
+
     } else if (payload.event === 'PAYMENT_REFUNDED' || payload.event === 'SUBSCRIPTION_DELETED') {
+      console.log("[Webhook] Assinatura cancelada/reembolsada, rebaixando plano para o usuário:", userId);
       await supabaseAdmin
         .from('profiles')
         .update({ subscription_status: 'CANCELLED' })
         .eq('id', userId);
+
+      await supabaseAdmin
+        .from('workspaces')
+        .update({ plan: 'none' })
+        .eq('owner_id', userId);
     }
 
     console.log("[Webhook] Event", payload.event, "processed successfully for user:", userId);
