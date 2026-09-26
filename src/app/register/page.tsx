@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { ArrowRight, Lock, Mail, User } from "lucide-react";
+import { Turnstile } from '@marsidev/react-turnstile';
 
 export default async function RegisterPage(props: { searchParams: Promise<{ error?: string, success?: string, email?: string }> }) {
   const searchParams = await props.searchParams;
@@ -126,6 +127,10 @@ export default async function RegisterPage(props: { searchParams: Promise<{ erro
               </div>
 
               <div className="pt-2">
+                {/* Você precisará adicionar NEXT_PUBLIC_TURNSTILE_SITE_KEY no seu .env */}
+                <div className="flex justify-center mb-4">
+                  <Turnstile siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'} />
+                </div>
                 <Button type="submit" className="w-full h-12 rounded-xl text-md font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2 group">
                   Criar conta agora
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

@@ -131,10 +131,10 @@ export default function Home() {
                             </div>
                             <h3 className="text-3xl font-semibold text-zinc-900 mb-4 tracking-tight">CDN Global Inteligente</h3>
                             <p className="text-zinc-600 text-lg leading-relaxed">Nossa infraestrutura distribui seus vídeos globalmente através de edge nodes espalhados pelo mundo. Carregamento quase instantâneo e zero buffering em 4K para a melhor experiência do seu usuário.</p>
-                            <div className="mt-auto flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                                <span className="text-xs font-mono text-[#2563eb] tracking-widest">EXPLORAR INFRA</span>
+                            <Link href="/infra" className="mt-auto flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                                <span className="text-xs font-mono text-[#2563eb] tracking-widest hover:underline cursor-pointer">EXPLORAR INFRA</span>
                                 <ArrowRight className="w-4 h-4 text-[#2563eb] tracking-widest" />
-                            </div>
+                            </Link>
                         </div>
                         <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none" style={{ background: 'radial-gradient(circle at top right, #2563eb, transparent 70%)' }}></div>
                     </div>

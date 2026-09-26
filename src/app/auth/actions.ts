@@ -15,7 +15,8 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect("/login?error=Email ou senha incorretos.");
+    console.error("Erro real do login:", error);
+    redirect(`/login?error=${encodeURIComponent(error.message || "Email ou senha incorretos.")}`);
   }
 
   revalidatePath("/", "layout");
@@ -23,6 +24,27 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
+  const turnstileToken = formData.get("cf-turnstile-response") as string;
+  const secretKey = process.env.TURNSTILE_SECRET_KEY;
+
+  if (secretKey && !turnstileToken) {
+    redirect("/register?error=Por favor, complete a verificação de segurança.");
+  }
+
+  if (secretKey && turnstileToken) {
+    const verifyEndpoint = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+    const res = await fetch(verifyEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(turnstileToken)}`,
+    });
+    
+    const data = await res.json();
+    if (!data.success) {
+      redirect("/register?error=Falha na verificação de segurança. Tente novamente.");
+    }
+  }
+
   const supabase = await createClient();
 
   const data = {
