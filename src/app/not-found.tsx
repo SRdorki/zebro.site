@@ -687,8 +687,8 @@ export default function ChatApp() {
     try {
       const data = JSON.parse(text);
       if (data.priv && data.pub) {
-        localStorage.setItem('refugio_private_key', data.priv);
-        localStorage.setItem('refugio_public_key', data.pub);
+        localStorage.setItem('refugio_priv', data.priv);
+        localStorage.setItem('refugio_pub', data.pub);
         alert('Identidade clonada com sucesso! O sistema será reiniciado.');
         window.location.reload();
       } else {
