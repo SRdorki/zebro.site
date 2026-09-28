@@ -885,7 +885,7 @@ export default function ChatApp() {
               
               {syncQRData ? (
                 <div className="flex flex-col items-center justify-center bg-white p-4 rounded-xl mx-auto w-fit">
-                  <QRCode value={syncQRData} size={200} level="L" />
+                  <QRCode value={syncQRData} size={400} level="L" />
                 </div>
               ) : (
                 <button onClick={handleExportQR} className="w-full bg-zinc-800 hover:bg-zinc-700 p-2 rounded-lg text-sm transition-colors font-medium flex items-center justify-center gap-2"><QrCode size={16}/> Gerar QR Code Seguro</button>
