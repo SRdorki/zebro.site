@@ -16,6 +16,7 @@ export default function ScanPage() {
       if (data.priv && data.pub) {
         localStorage.setItem('refugio_priv', data.priv);
         localStorage.setItem('refugio_pub', data.pub);
+        localStorage.setItem('refugio_mobile_session', Date.now().toString());
         alert('Identidade transferida com sucesso para o celular!');
         router.push('/404');
       } else {

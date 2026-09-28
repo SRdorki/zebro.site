@@ -166,10 +166,25 @@ export default function ChatApp() {
 
   // Estado de Disfarce (Decoy)
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const tapCountRef = useRef(0);
 
-  // Listener para a "senha invisível"
+  // Listener para a "senha invisível" e verificação de sessão mobile
   useEffect(() => {
+    // Verifica Sessão Mobile
+    const mobileSession = localStorage.getItem('refugio_mobile_session');
+    if (mobileSession) {
+      const sessionTime = parseInt(mobileSession, 10);
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+      if (Date.now() - sessionTime < THIRTY_DAYS) {
+        setIsUnlocked(true);
+      } else {
+        // Sessão expirou
+        localStorage.removeItem('refugio_mobile_session');
+        localStorage.removeItem('refugio_priv');
+        localStorage.removeItem('refugio_pub');
+        alert("Sessão mobile expirou (30 dias). Sincronize novamente.");
+      }
+    }
+
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.key === '?') {
         setIsUnlocked(true);
@@ -707,20 +722,8 @@ export default function ChatApp() {
 
   // TELA DE DISFARCE (404 Real do Next.js)
   if (!isUnlocked) {
-    const handleMobileTap = () => {
-      tapCountRef.current += 1;
-      if (tapCountRef.current >= 5) {
-        setIsUnlocked(true);
-        tapCountRef.current = 0;
-      }
-      setTimeout(() => { tapCountRef.current = 0; }, 2000);
-    };
-
     return (
-      <div 
-        className="flex flex-col items-center justify-center h-screen bg-white text-black font-sans text-center select-none"
-        onClick={handleMobileTap}
-      >
+      <div className="flex flex-col items-center justify-center h-screen bg-white text-black font-sans text-center select-none">
         <h1 className="text-4xl font-bold mb-4">404 Not Found</h1>
         <hr className="w-1/4 border-gray-400 mb-4" />
         <p className="text-sm text-gray-600">nginx/1.18.0 (Ubuntu)</p>
