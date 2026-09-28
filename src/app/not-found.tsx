@@ -166,6 +166,7 @@ export default function ChatApp() {
 
   // Estado de Disfarce (Decoy)
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const tapCountRef = useRef(0);
 
   // Listener para a "senha invisível"
   useEffect(() => {
@@ -706,8 +707,20 @@ export default function ChatApp() {
 
   // TELA DE DISFARCE (404 Real do Next.js)
   if (!isUnlocked) {
+    const handleMobileTap = () => {
+      tapCountRef.current += 1;
+      if (tapCountRef.current >= 5) {
+        setIsUnlocked(true);
+        tapCountRef.current = 0;
+      }
+      setTimeout(() => { tapCountRef.current = 0; }, 2000);
+    };
+
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-white text-black font-sans text-center">
+      <div 
+        className="flex flex-col items-center justify-center h-screen bg-white text-black font-sans text-center select-none"
+        onClick={handleMobileTap}
+      >
         <h1 className="text-4xl font-bold mb-4">404 Not Found</h1>
         <hr className="w-1/4 border-gray-400 mb-4" />
         <p className="text-sm text-gray-600">nginx/1.18.0 (Ubuntu)</p>
