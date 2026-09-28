@@ -257,21 +257,28 @@ export default function ChatApp() {
     return () => clearInterval(interval);
   }, []);
 
+  const isInitialMount = useRef(true);
+
   // Salvar contatos
   useEffect(() => {
-    if (Object.keys(contacts).length > 0) {
-      localStorage.setItem('refugio_contacts', JSON.stringify(contacts));
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
     }
+    localStorage.setItem('refugio_contacts', JSON.stringify(contacts));
   }, [contacts]);
 
+  const isInitialMountMsg = useRef(true);
   // Salvar mensagens (com try/catch pois arquivos grandes podem estourar o limite de 5MB do localStorage)
   useEffect(() => {
-    if (Object.keys(messages).length > 0) {
-      try {
-        localStorage.setItem('refugio_messages', JSON.stringify(messages));
-      } catch (e) {
-        console.warn("Limite do localStorage atingido, algumas mensagens com arquivos grandes não serão salvas.");
-      }
+    if (isInitialMountMsg.current) {
+      isInitialMountMsg.current = false;
+      return;
+    }
+    try {
+      localStorage.setItem('refugio_messages', JSON.stringify(messages));
+    } catch (e) {
+      console.warn("Limite do localStorage atingido, algumas mensagens com arquivos grandes não serão salvas.");
     }
   }, [messages]);
 
@@ -318,7 +325,7 @@ export default function ChatApp() {
       setMyKeys({ private: keys.privateKey, public: keys.publicKey });
       setMyId(pubKeyBase64);
 
-      newSocket = io();
+      newSocket = io(`http://${window.location.hostname}:4000`);
       newSocket?.on('connect', () => {
         newSocket?.emit('register', pubKeyBase64);
       });
