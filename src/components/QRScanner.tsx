@@ -1,57 +1,76 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 
 export default function QRScanner({ onScan, onError }: { onScan: (text: string) => void, onError: (err: any) => void }) {
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
-    const scanner = new Html5QrcodeScanner(
-      "qr-reader",
-      { 
-        fps: 10, 
+    // Usar Html5Qrcode diretamente (em vez de Scanner) pula toda a interface padrão de botões e links
+    const html5QrCode = new Html5Qrcode("qr-reader");
+    scannerRef.current = html5QrCode;
+
+    html5QrCode.start(
+      { facingMode: "environment" }, // Força a câmera traseira
+      {
+        fps: 10,
         qrbox: { width: 300, height: 300 },
         aspectRatio: 1.0,
       },
-      /* verbose= */ false
-    );
-    scannerRef.current = scanner;
-
-    scanner.render((decodedText) => {
-      scanner.clear();
-      onScan(decodedText);
-    }, (error) => {
-      // onError(error);
+      (decodedText) => {
+        // Sucesso
+        html5QrCode.stop().then(() => {
+          onScan(decodedText);
+        }).catch(() => {
+          onScan(decodedText);
+        });
+      },
+      (errorMessage) => {
+        // Erros de leitura por frame (ignorar)
+      }
+    ).then(() => {
+      setIsScanning(true);
+      setPermissionDenied(false);
+    }).catch((err) => {
+      console.warn("Falha ao iniciar a câmera", err);
+      // Pode ser erro de permissão ou não ter câmera traseira
+      setPermissionDenied(true);
+      if (onError) onError(err);
     });
 
-    // Monitora se o vídeo da câmera apareceu para ligar a animação da borda
-    const interval = setInterval(() => {
-      const video = document.querySelector('#qr-reader video');
-      setIsScanning(!!video);
-    }, 500);
-
     return () => {
-      clearInterval(interval);
-      scanner.clear().catch(e => console.error("Failed to clear scanner", e));
+      if (html5QrCode.isScanning) {
+        html5QrCode.stop().catch(e => console.error("Failed to stop scanner", e));
+      }
     };
   }, [onScan, onError]);
 
   return (
     <div className="relative w-full max-w-sm mx-auto aspect-square rounded-2xl p-1 bg-zinc-900 overflow-hidden shadow-2xl shadow-purple-900/10">
       
-      {/* Efeito de Borda Animada (Conic Gradient) */}
+      {/* Efeito de Borda Animada (Conic Gradient) quando estiver escaneando */}
       {isScanning && (
         <div className="absolute top-1/2 left-1/2 w-[200%] h-[200%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,transparent_0_280deg,#5b32f5_360deg)] animate-[spin_2.5s_linear_infinite] z-0"></div>
       )}
 
       {/* Container Principal */}
       <div className="absolute inset-1 z-10 bg-[#050505] rounded-xl overflow-hidden flex flex-col items-center justify-center">
-        <div id="qr-reader" className="w-full h-full flex flex-col items-center justify-center"></div>
+        {permissionDenied && (
+          <div className="text-center p-4">
+            <div className="text-red-500 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+            </div>
+            <p className="text-sm text-zinc-400 font-medium">Câmera bloqueada</p>
+            <p className="text-xs text-zinc-600 mt-1">Permita o acesso à câmera e recarregue a página.</p>
+          </div>
+        )}
+        <div id="qr-reader" className={`w-full h-full flex flex-col items-center justify-center ${permissionDenied ? 'hidden' : ''}`}></div>
       </div>
 
-      {/* Estilos Globais para Sobrescrever a UI feia do html5-qrcode */}
+      {/* Estilos Globais para garantir que o vídeo preencha a div sem outras UIs */}
       <style dangerouslySetInnerHTML={{ __html: `
         #qr-reader {
           border: none !important;
@@ -60,69 +79,20 @@ export default function QRScanner({ onScan, onError }: { onScan: (text: string) 
           flex-direction: column;
           align-items: center;
           justify-content: center;
-        }
-        /* Esconde a caixa de borda padrão do plugin se o vídeo preencher a tela */
-        #qr-reader__scan_region {
-          background-color: #050505 !important;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100% !important;
-          width: 100% !important;
+          position: relative;
         }
         #qr-reader video {
           border-radius: 12px !important;
           object-fit: cover !important;
           width: 100% !important;
           height: 100% !important;
+          position: absolute;
+          top: 0;
+          left: 0;
         }
-        /* Botões do Scanner */
-        #qr-reader button {
-          background-color: #5b32f5 !important;
-          color: white !important;
-          border: none !important;
-          padding: 10px 20px !important;
-          border-radius: 10px !important;
-          font-weight: 600 !important;
-          cursor: pointer !important;
-          margin: 8px !important;
-          transition: all 0.2s !important;
-          box-shadow: 0 4px 14px 0 rgba(91, 50, 245, 0.2) !important;
-        }
-        #qr-reader button:hover {
-          background-color: #4f2ce0 !important;
-          transform: translateY(-1px) !important;
-        }
-        /* Textos (Request Camera Permissions, etc) */
-        #qr-reader__dashboard_section_csr span {
-          color: #a1a1aa !important; /* zinc-400 */
-          font-family: inherit !important;
-          font-size: 14px !important;
-          margin-bottom: 12px !important;
-          display: block;
-        }
-        /* Select de câmeras */
-        #qr-reader select {
-          background-color: #18181b !important;
-          color: white !important;
-          border: 1px solid #27272a !important;
-          padding: 10px !important;
-          border-radius: 8px !important;
-          margin: 10px 0 !important;
-          outline: none !important;
-          width: 80% !important;
-        }
-        /* Links chatos de "Scan Image" / "Scan using camera" */
-        #qr-reader__dashboard_section_swaplink {
-          color: #5b32f5 !important;
-          text-decoration: none !important;
-          font-weight: 500 !important;
-          margin-top: 15px !important;
-          display: inline-block;
-        }
-        /* Remover a logo do html5-qrcode se aparecer */
-        #qr-reader a {
-          opacity: 0.8 !important;
+        #qr-shaded-region {
+          border-width: 25px !important;
+          border-color: rgba(0,0,0,0.6) !important;
         }
       `}} />
     </div>
