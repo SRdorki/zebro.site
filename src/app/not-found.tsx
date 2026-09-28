@@ -318,7 +318,7 @@ export default function ChatApp() {
       setMyKeys({ private: keys.privateKey, public: keys.publicKey });
       setMyId(pubKeyBase64);
 
-      newSocket = io(`http://${window.location.hostname}:4000`);
+      newSocket = io();
       newSocket?.on('connect', () => {
         newSocket?.emit('register', pubKeyBase64);
       });
@@ -509,7 +509,7 @@ export default function ChatApp() {
               
               setMessages(prev => {
                 const chat = prev[id] || [];
-                if (chat.some(m => m.timestamp === data.timestamp && m.sender === id)) return prev;
+                if (chat.some(m => m.timestamp === data.timestamp && (m.sender === id || m.sender === myId))) return prev;
                 return { ...prev, [id]: [...chat, newMsg] };
               });
             } catch (e) {
@@ -614,13 +614,17 @@ export default function ChatApp() {
         toCode: activeContact,
         encryptedPayload
       });
-      const selfEncryptedPayload = await encryptMessage(payloadStr, myKeys.private, myId);
-      socket.emit('sync_my_device', {
-        fromCode: myId,
-        toContact: activeContact,
-        encryptedPayload: selfEncryptedPayload,
-        timestamp: Date.now()
-      });
+      try {
+        const selfEncryptedPayload = await encryptMessage(payloadStr, myKeys.private, myId);
+        socket.emit('sync_my_device', {
+          fromCode: myId,
+          toContact: activeContact,
+          encryptedPayload: selfEncryptedPayload,
+          timestamp: Date.now()
+        });
+      } catch (e) {
+        console.error('Erro no sync interno:', e);
+      }
     }
 
     setInputText('');
@@ -676,13 +680,17 @@ export default function ChatApp() {
           toCode: activeContact,
           encryptedPayload
         });
-        const selfEncryptedPayload = await encryptMessage(payloadStr, myKeys.private, myId);
-        socket.emit('sync_my_device', {
-          fromCode: myId,
-          toContact: activeContact,
-          encryptedPayload: selfEncryptedPayload,
-          timestamp: Date.now()
-        });
+        try {
+          const selfEncryptedPayload = await encryptMessage(payloadStr, myKeys.private, myId);
+          socket.emit('sync_my_device', {
+            fromCode: myId,
+            toContact: activeContact,
+            encryptedPayload: selfEncryptedPayload,
+            timestamp: Date.now()
+          });
+        } catch (e) {
+          console.error('Erro no sync interno:', e);
+        }
       }
     };
     reader.readAsDataURL(file);
