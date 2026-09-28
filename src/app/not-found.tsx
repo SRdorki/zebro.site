@@ -166,10 +166,25 @@ export default function ChatApp() {
 
   // Estado de Disfarce (Decoy)
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const tapCountRef = useRef(0);
 
-  // Listener para a "senha invisível"
+  // Listener para a "senha invisível" e verificação de sessão mobile
   useEffect(() => {
+    // Verifica Sessão Mobile
+    const mobileSession = localStorage.getItem('refugio_mobile_session');
+    if (mobileSession) {
+      const sessionTime = parseInt(mobileSession, 10);
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+      if (Date.now() - sessionTime < THIRTY_DAYS) {
+        setIsUnlocked(true);
+      } else {
+        // Sessão expirou
+        localStorage.removeItem('refugio_mobile_session');
+        localStorage.removeItem('refugio_priv');
+        localStorage.removeItem('refugio_pub');
+        alert("Sessão mobile expirou (30 dias). Sincronize novamente.");
+      }
+    }
+
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.key === '?') {
         setIsUnlocked(true);
@@ -707,20 +722,8 @@ export default function ChatApp() {
 
   // TELA DE DISFARCE (404 Real do Next.js)
   if (!isUnlocked) {
-    const handleMobileTap = () => {
-      tapCountRef.current += 1;
-      if (tapCountRef.current >= 5) {
-        setIsUnlocked(true);
-        tapCountRef.current = 0;
-      }
-      setTimeout(() => { tapCountRef.current = 0; }, 2000);
-    };
-
     return (
-      <div 
-        className="flex flex-col items-center justify-center h-screen bg-white text-black font-sans text-center select-none"
-        onClick={handleMobileTap}
-      >
+      <div className="flex flex-col items-center justify-center h-screen bg-white text-black font-sans text-center select-none">
         <h1 className="text-4xl font-bold mb-4">404 Not Found</h1>
         <hr className="w-1/4 border-gray-400 mb-4" />
         <p className="text-sm text-gray-600">nginx/1.18.0 (Ubuntu)</p>
@@ -838,6 +841,25 @@ export default function ChatApp() {
                       <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${notificationsEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
                     </button>
                   </div>
+                  <div className="flex justify-between items-center bg-red-900/10 p-4 rounded-xl border border-red-900/30">
+                    <div>
+                      <h3 className="font-medium text-red-500 text-sm">Desconectar Dispositivo</h3>
+                      <p className="text-xs text-red-500/70 mt-1">Apaga as chaves criptográficas deste aparelho. Será necessário parear novamente.</p>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        if (confirm("Tem certeza? Você perderá acesso a este Agente neste dispositivo.")) {
+                          localStorage.removeItem('refugio_priv');
+                          localStorage.removeItem('refugio_pub');
+                          localStorage.removeItem('refugio_mobile_session');
+                          window.location.reload();
+                        }
+                      }}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-bold rounded-lg transition-colors"
+                    >
+                      Sair
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex justify-end mt-8">
@@ -887,7 +909,7 @@ export default function ChatApp() {
       )}
 
       {/* Sidebar Lateral */}
-      <div className="w-80 border-r border-zinc-800/50 bg-[#0a0a0a] flex flex-col hidden lg:flex">
+      <div className={`lg:w-80 w-full border-r border-zinc-800/50 bg-[#0a0a0a] flex-col ${!activeContact ? 'flex' : 'hidden lg:flex'}`}>
         {/* Meu Perfil */}
         <div className="p-6 border-b border-zinc-800/50 relative">
           <div className="flex items-center gap-3 mb-6">
@@ -961,7 +983,7 @@ export default function ChatApp() {
       </div>
 
       {/* Área Principal do Chat */}
-      <div className="flex-1 flex flex-col bg-[#050505] relative">
+      <div className={`flex-1 flex-col bg-[#050505] relative ${activeContact ? 'flex' : 'hidden lg:flex'}`}>
         {activeContact ? (
           <>
             {/* Header do Chat */}
