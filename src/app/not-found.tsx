@@ -51,8 +51,8 @@ const MessageBubble = ({ msg, isMe }: { msg: ChatMessage, isMe: boolean }) => {
         clearInterval(interval);
       } else {
         setDisplayed(
-          msg.text.split('').map((char, i) => {
-            const revealThreshold = (i / msg.text!.length) * maxIterations;
+          (msg.text as string).split('').map((char, i) => {
+            const revealThreshold = (i / (msg.text as string).length) * maxIterations;
             if (iterations > revealThreshold) return char;
             const isCipher = Math.random() > 0.3;
             return isCipher ? encoded[i] : '!@#$%^&*()[];.,~='[Math.floor(Math.random() * 17)];
@@ -139,7 +139,7 @@ export default function ChatApp() {
   }, [activeContact]);
   
   // Modais customizados
-  const [activeModal, setActiveModal] = useState<'jackal' | 'edit_alias' | 'delete_contact' | null>(null);
+  const [activeModal, setActiveModal] = useState<'jackal' | 'edit_alias' | 'delete_contact' | 'settings' | null>(null);
   const [modalInput, setModalInput] = useState('');
   const [modalTargetContact, setModalTargetContact] = useState<string | null>(null);
   
@@ -303,16 +303,10 @@ export default function ChatApp() {
       setMyId(pubKeyBase64);
 
       newSocket = io('http://localhost:4000');
-      newSocket.on('connect', () => {
-        newSocket.emit('register', pubKeyBase64);
+      newSocket?.on('connect', () => {
+        newSocket?.emit('register', pubKeyBase64);
       });
-
-      // Eventos de Sincronização
-      newSocket.on('sync_code_generated', (code) => {
-        setSyncCode(code);
-      });
-
-      newSocket.on('sync_device_receive', async (data) => {
+      newSocket?.on('sync_device_receive', async (data) => {
         try {
           const importedPrivate = await importPrivateKey(data.exportedPrivateKey);
           const importedPublic = await importPublicKey(data.exportedPublicKey);
@@ -324,7 +318,7 @@ export default function ChatApp() {
           localStorage.setItem('refugio_priv', data.exportedPrivateKey);
           localStorage.setItem('refugio_pub', pubKeyBase64);
           
-          newSocket!.emit('register', pubKeyBase64);
+          newSocket?.emit('register', pubKeyBase64);
           setShowSyncModal(false);
           alert('Identidade Sincronizada com Sucesso! Este dispositivo agora é o mesmo Agente.');
         } catch(e) {
@@ -333,12 +327,12 @@ export default function ChatApp() {
         }
       });
 
-      newSocket.on('sync_success', () => {
+      newSocket?.on('sync_success', () => {
         alert('Dispositivo pareado com sucesso!');
         setShowSyncModal(false);
       });
 
-      setSocket(newSocket);
+      setSocket(newSocket as unknown as Socket);
     }
     init();
 
