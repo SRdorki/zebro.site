@@ -318,7 +318,7 @@ export default function ChatApp() {
       setMyKeys({ private: keys.privateKey, public: keys.publicKey });
       setMyId(pubKeyBase64);
 
-      newSocket = io('http://localhost:4000');
+      newSocket = io(`http://${window.location.hostname}:4000`);
       newSocket?.on('connect', () => {
         newSocket?.emit('register', pubKeyBase64);
       });
@@ -421,10 +421,45 @@ export default function ChatApp() {
       });
     };
 
+    const handleReceiveSync = async (data: { toContact: string, encryptedPayload: string, timestamp: number }) => {
+      if (!settingsRef.current.receiveMessages) return;
+      if (!currentKeys.current) return;
+      try {
+        const decryptedCode = await decryptMessage(data.encryptedPayload, currentKeys.current.private, myId);
+        
+        let newMsg: ChatMessage;
+        try {
+          const parsed = JSON.parse(decryptedCode);
+          if (parsed.type === 'file') {
+            newMsg = { sender: myId, file: { name: parsed.name, mime: parsed.mime, data: parsed.data }, timestamp: data.timestamp };
+          } else if (parsed.type === 'text') {
+            newMsg = { sender: myId, text: visualCipher.decode(parsed.content), timestamp: data.timestamp };
+          } else {
+            newMsg = { sender: myId, text: visualCipher.decode(decryptedCode), timestamp: data.timestamp };
+          }
+        } catch(e) {
+          newMsg = { sender: myId, text: visualCipher.decode(decryptedCode), timestamp: data.timestamp };
+        }
+        
+        setMessages(prev => {
+          const chat = prev[data.toContact] || [];
+          if (chat.some(m => m.timestamp === data.timestamp && m.sender === myId)) return prev;
+          return {
+            ...prev,
+            [data.toContact]: [...chat, newMsg]
+          };
+        });
+      } catch (error) {
+        console.error("Falha ao descriptografar sync", error);
+      }
+    };
+
     socket.off('receive_message');
     socket.off('delete_history');
+    socket.off('receive_sync_my_device');
     socket.on('receive_message', handleReceive);
     socket.on('delete_history', handleDeleteHistory);
+    socket.on('receive_sync_my_device', handleReceiveSync);
   }, [socket]);
 
   // MODO CHACAL: Ouvintes e Sincronização
@@ -442,10 +477,10 @@ export default function ChatApp() {
 
     listenToDrops();
     const interval = setInterval(listenToDrops, 5 * 60 * 1000);
+    socket.on('connect', listenToDrops);
 
     const handleJackalReceive = async (data: { dropId: string, encryptedPayload: string, timestamp: number, senderId: string }) => {
       if (!settingsRef.current.receiveMessages) return;
-      if (data.senderId === myId) return; // Ignora ecos de nós mesmos
 
       for (const [id, info] of Object.entries(contacts)) {
         if (info.type === 'jackal' && info.passphrase) {
@@ -496,6 +531,7 @@ export default function ChatApp() {
 
     return () => {
       clearInterval(interval);
+      socket.off('connect', listenToDrops);
       socket.off('jackal_receive', handleJackalReceive);
       socket.off('jackal_sync', handleJackalSync);
     };
@@ -578,6 +614,13 @@ export default function ChatApp() {
         toCode: activeContact,
         encryptedPayload
       });
+      const selfEncryptedPayload = await encryptMessage(payloadStr, myKeys.private, myId);
+      socket.emit('sync_my_device', {
+        fromCode: myId,
+        toContact: activeContact,
+        encryptedPayload: selfEncryptedPayload,
+        timestamp: Date.now()
+      });
     }
 
     setInputText('');
@@ -632,6 +675,13 @@ export default function ChatApp() {
           fromCode: myId,
           toCode: activeContact,
           encryptedPayload
+        });
+        const selfEncryptedPayload = await encryptMessage(payloadStr, myKeys.private, myId);
+        socket.emit('sync_my_device', {
+          fromCode: myId,
+          toContact: activeContact,
+          encryptedPayload: selfEncryptedPayload,
+          timestamp: Date.now()
         });
       }
     };

@@ -141,6 +141,18 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('sync_my_device', (data) => {
+    const { fromCode, toContact, encryptedPayload, timestamp } = data;
+    const mySockets = usersMap.get(fromCode);
+    if (mySockets) {
+      for (let socketId of mySockets) {
+        if (socketId !== socket.id) {
+          io.to(socketId).emit('receive_sync_my_device', { toContact, encryptedPayload, timestamp });
+        }
+      }
+    }
+  });
+
   // === WEBRTC REMOVIDO ===
 
   socket.on('disconnect', () => {
